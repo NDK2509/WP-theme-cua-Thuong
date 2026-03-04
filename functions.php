@@ -8,6 +8,9 @@
 // Include theme setup.
 require get_template_directory() . '/inc/setup.php';
 
+// Include theme activation setup.
+require get_template_directory() . '/inc/activation.php';
+
 // Include scripts and styles enqueues.
 require get_template_directory() . '/inc/enqueue.php';
 

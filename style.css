@@ -579,43 +579,144 @@ button {
 }
 
 /* Product Cards */
-.product-card {
+.censkills-product {
+	text-align: left;
+	margin-bottom: var(--spacing-md);
 	position: relative;
-	transition: transform var(--transition-fast);
-}
-
-.product-image-container {
 	display: block;
-	overflow: hidden;
-	border-radius: var(--border-radius-sm);
-	aspect-ratio: 3/4;
 }
 
-.product-image {
+.censkills-product-image-wrap {
+	background-color: #e2e2e4;
+	border-radius: 8px;
+	position: relative;
+	overflow: hidden;
+	margin-bottom: 12px;
+	aspect-ratio: 5 / 6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.censkills-product-img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain;
+	mix-blend-mode: multiply;
 	transition: transform var(--transition-normal);
 }
 
-.product-card:hover .product-image {
+.censkills-product-image-wrap:hover .censkills-product-img {
 	transform: scale(1.05);
 }
 
-.product-badge {
-	background-color: var(--color-accent-red);
-	color: white;
-	font-size: 0.75rem;
-	font-weight: bold;
-	padding: 2px 8px;
-	border-radius: var(--border-radius-pill);
+.censkills-badge {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	background-color: #263c9b;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	padding: 4px 12px;
+	border-radius: 999px;
+	z-index: 2;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
-.product-title {
+.censkills-badge.sale-badge {
+	background-color: var(--color-accent-red);
+}
+
+.censkills-product-swatches {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.censkills-product-swatches .swatch {
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 1px solid rgba(150, 150, 150, 0.3);
+	cursor: pointer;
+	box-shadow: 0 0 0 1px transparent;
+	transition: all var(--transition-fast);
+}
+
+.censkills-product-swatches .swatch:hover {
+	box-shadow: 0 0 0 1px var(--color-text);
+}
+
+.swatch.bg-black {
+	background-color: #111;
+}
+
+.swatch.bg-gray-light {
+	background-color: #e5e7eb;
+}
+
+.swatch.bg-gray-dark {
+	background-color: #6b7280;
+}
+
+.swatch.bg-white {
+	background-color: #ffffff;
+}
+
+.censkills-product-title,
+.woocommerce ul.products li.product .censkills-product-title {
+	font-size: 15px;
+	color: var(--color-text-light);
+	margin: 0 0 6px 0;
+	font-weight: 400;
+	line-height: 1.4;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
+	line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+}
+
+.censkills-product-title a {
+	color: inherit;
+}
+
+.censkills-product-price,
+.woocommerce ul.products li.product .censkills-product-price {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--color-text);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.censkills-product-price del,
+.woocommerce ul.products li.product .censkills-product-price del {
+	font-weight: 400;
+	font-size: 13px;
+	color: #999;
+}
+
+.censkills-product-price ins,
+.woocommerce ul.products li.product .censkills-product-price ins {
+	text-decoration: none;
+	font-weight: 700;
+}
+
+/* Ensure WooCommerce product grid uses these rules */
+.woocommerce ul.products li.product {
+	background: transparent !important;
+	padding: 0 !important;
+	text-align: left !important;
+	list-style: none;
+}
+
+.woocommerce ul.products li.product .button {
+	display: none !important;
 }
 
 .hover-bg-white:hover {
@@ -798,6 +899,30 @@ button {
 	/* Subtle indent effect */
 }
 
+/* ==========================================================================
+   Global Layout Constraints
+   ========================================================================== */
+
+/* Provide standard container margins & padding to the main content area for all default pages, archives, and WooCommerce templates */
+main.site-main {
+	width: 100%;
+	max-width: var(--container-max-width);
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
+	padding-top: var(--spacing-xl);
+	padding-bottom: var(--spacing-xl);
+}
+
+/* Ensure the homepage can utilize full-width sections (like the hero banner) */
+body.home main.site-main {
+	max-width: none;
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: 0;
+}
+
 /* Active state for navigation links */
 .woocommerce-MyAccount-navigation ul li.is-active a {
 	background-color: rgba(47, 90, 207, 0.1);
@@ -891,4 +1016,349 @@ button {
 	padding: var(--spacing-sm);
 	border-bottom: 1px solid var(--color-border);
 	vertical-align: middle;
+}
+
+/* ==========================================================================
+   Single Product Page (Product Details)
+   ========================================================================== */
+
+/* Layout */
+.single-product div.product {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacing-xl);
+}
+
+.single-product div.product .woocommerce-product-gallery {
+	width: 100%;
+	margin-bottom: var(--spacing-lg);
+}
+
+.single-product div.product .summary.entry-summary {
+	width: 100%;
+}
+
+@media (min-width: 768px) {
+	.single-product div.product .woocommerce-product-gallery {
+		width: calc(50% - (var(--spacing-xl) / 2));
+		margin-bottom: 0;
+	}
+
+	.single-product div.product .summary.entry-summary {
+		width: calc(50% - (var(--spacing-xl) / 2));
+	}
+}
+
+/* Product Gallery */
+.single-product div.product .woocommerce-product-gallery .woocommerce-product-gallery__wrapper {
+	background-color: #fff;
+	border-radius: var(--border-radius-lg);
+	overflow: hidden;
+}
+
+.single-product div.product .woocommerce-product-gallery img {
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+}
+
+/* Sale Badge on Single Product */
+.single-product span.onsale {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	background-color: #6c8e03;
+	/* Vibrant olive green from screenshot */
+	color: #fff;
+	font-size: 14px;
+	font-weight: 700;
+	padding: 0;
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+	line-height: 1;
+}
+
+/* Product Title */
+.single-product div.product .product_title {
+	font-size: 2rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: var(--spacing-xs);
+	color: var(--color-text);
+	/* Ensure good contrast */
+}
+
+/* Product Price */
+.single-product div.product p.price {
+	font-size: 1.5rem;
+	color: #c9c522;
+	/* Golden/yellowish price color from screenshot */
+	font-weight: 700;
+	margin-bottom: var(--spacing-md);
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.single-product div.product p.price del {
+	font-size: 1.1rem;
+	color: #999;
+	/* Greyer muted color for original price */
+	font-weight: 400;
+}
+
+.single-product div.product p.price ins {
+	text-decoration: none;
+}
+
+/* Add to Cart Form Elements */
+.single-product div.product form.cart {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: var(--spacing-lg);
+	margin-bottom: var(--spacing-lg);
+}
+
+.single-product div.product form.cart div.quantity {
+	display: inline-flex;
+}
+
+.single-product div.product form.cart div.quantity .qty {
+	width: 60px;
+	height: 44px;
+	background-color: transparent;
+	border: 1px solid var(--color-border);
+	border-radius: var(--border-radius-sm);
+	text-align: center;
+	font-size: 1rem;
+	color: inherit;
+}
+
+/* Purple Add to Cart Button */
+.single-product div.product form.cart button.button.alt {
+	height: 44px;
+	padding: 0 24px;
+	background-color: #5c3b99;
+	/* Purple flavor from screenshot */
+	color: #fff;
+	border: none;
+	border-radius: var(--border-radius-sm);
+	font-weight: 600;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color var(--transition-fast);
+}
+
+.single-product div.product form.cart button.button.alt:hover {
+	background-color: #492e7c;
+}
+
+/* Product Meta (Categories, Tags) */
+.single-product div.product .product_meta {
+	font-size: 0.9rem;
+	color: var(--color-text-light);
+	border-top: 1px solid var(--color-border);
+	padding-top: var(--spacing-md);
+}
+
+.single-product div.product .product_meta a {
+	color: var(--color-text);
+}
+
+.single-product div.product .product_meta a:hover {
+	text-decoration: underline;
+}
+
+/* ==========================================================================
+   Single Product Tabs (Reviews & Description)
+   ========================================================================== */
+
+.single-product div.product .woocommerce-tabs {
+	width: 100%;
+	margin-top: var(--spacing-xl);
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	padding-top: var(--spacing-lg);
+}
+
+/* Tabs Navigation */
+.single-product div.product .woocommerce-tabs ul.tabs {
+	display: flex;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+	gap: 2px;
+}
+
+.single-product div.product .woocommerce-tabs ul.tabs li {
+	background: transparent;
+	border: 1px solid transparent;
+	border-bottom: none;
+	border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+	transition: all var(--transition-fast);
+}
+
+.single-product div.product .woocommerce-tabs ul.tabs li.active {
+	background-color: rgba(255, 255, 255, 0.05);
+	/* Very subtle highlight */
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.single-product div.product .woocommerce-tabs ul.tabs li a {
+	display: inline-block;
+	padding: 12px 24px;
+	color: #999;
+	font-weight: 600;
+	font-size: 1rem;
+	text-decoration: none;
+}
+
+.single-product div.product .woocommerce-tabs ul.tabs li.active a,
+.single-product div.product .woocommerce-tabs ul.tabs li a:hover {
+	color: #fff;
+}
+
+/* Tab Content Areas */
+.single-product div.product .woocommerce-tabs .panel {
+	padding: var(--spacing-lg) 0;
+	color: #ccc;
+}
+
+.single-product div.product .woocommerce-tabs .panel h2 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: #fff;
+	margin-top: 0;
+	margin-bottom: var(--spacing-md);
+}
+
+/* Reviews Section */
+#reviews #comments {
+	margin-bottom: var(--spacing-lg);
+}
+
+#reviews #comments h2 {
+	margin-bottom: var(--spacing-sm);
+}
+
+#reviews #comments .woocommerce-noreviews {
+	color: #999;
+	margin-bottom: var(--spacing-xs);
+}
+
+/* Review Form */
+#review_form_wrapper {
+	margin-top: var(--spacing-md);
+}
+
+#review_form .comment-reply-title {
+	font-size: 1rem;
+	font-weight: 400;
+	color: #ccc;
+	margin-bottom: var(--spacing-xs);
+	display: block;
+}
+
+.comment-form-rating {
+	margin-bottom: var(--spacing-md);
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.comment-form-rating label {
+	color: #ccc;
+}
+
+/* WooCommerce Star Rating Customization */
+.woocommerce p.stars a {
+	color: transparent;
+	/* visually hide text */
+	position: relative;
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+}
+
+.woocommerce p.stars a::before {
+	content: "\2606";
+	/* Outline star */
+	color: #fff;
+	font-size: 24px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	font-family: inherit;
+	line-height: 1;
+}
+
+.woocommerce p.stars a:hover::before,
+.woocommerce p.stars a.active::before {
+	content: "\2605";
+	/* Solid star */
+}
+
+/* Form Inputs */
+#review_form .comment-form p {
+	margin-bottom: var(--spacing-md);
+}
+
+#review_form .comment-form label {
+	display: block;
+	color: #ccc;
+	margin-bottom: 6px;
+}
+
+#review_form .comment-form textarea,
+#review_form .comment-form input[type="text"],
+#review_form .comment-form input[type="email"] {
+	width: 100%;
+	background-color: rgba(255, 255, 255, 0.05);
+	/* Match screenshot dark input */
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: var(--border-radius-sm);
+	color: #fff;
+	padding: 12px;
+	font-size: 1rem;
+	transition: border-color var(--transition-fast);
+}
+
+#review_form .comment-form textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+#review_form .comment-form textarea:focus,
+#review_form .comment-form input[type="text"]:focus,
+#review_form .comment-form input[type="email"]:focus {
+	outline: none;
+	border-color: rgba(255, 255, 255, 0.5);
+}
+
+.woocommerce-product-rating {
+	display: none;
+}
+
+/* Submit Button */
+#review_form .form-submit input[type="submit"] {
+	background-color: rgba(255, 255, 255, 0.1);
+	color: #ccc;
+	border: 1px solid transparent;
+	padding: 10px 24px;
+	font-weight: 600;
+	font-size: 1rem;
+	border-radius: var(--border-radius-sm);
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+#review_form .form-submit input[type="submit"]:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	color: #fff;
 }

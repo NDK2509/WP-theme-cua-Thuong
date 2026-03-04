@@ -62,28 +62,29 @@ get_header(); ?>
 			
 			<div class="product-grid grid grid-cols-2 lg-grid-cols-4 gap-md text-left">
 				<?php for ($i = 1; $i <= 8; $i++) : ?>
-				<div class="product-card">
-					<a href="#" class="product-image-container relative">
-						<img src="https://placehold.co/400x550/f0f0f0/555555?text=Sản+Phẩm" alt="Product Name" class="product-image">
-						<!-- Discount Badge Example -->
-						<?php if ($i % 3 === 0) : ?>
-							<span class="product-badge absolute top-2 left-2">-20%</span>
-						<?php endif; ?>
-					</a>
-					<div class="product-info mt-sm">
-						<!-- Colors -->
-						<div class="product-colors flex gap-xs mb-xs">
-							<span style="background-color: #000; width: 16px; height: 16px; display: inline-block; border-radius: 50%;"></span>
-							<span style="background-color: #f0f0f0; width: 16px; height: 16px; display: inline-block; border-radius: 50%; border: 1px solid #ccc;"></span>
-							<span style="background-color: #2f5acf; width: 16px; height: 16px; display: inline-block; border-radius: 50%;"></span>
-						</div>
-						<h3 class="product-title font-medium text-sm"><a href="#">Áo Thun Giữ Nhiệt Nam Cổ Tròn CenSkills</a></h3>
-						<div class="product-price mt-xs">
-							<span class="price-current font-bold text-lg">299.000đ</span>
+				<div class="censkills-product">
+					<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
+						<div class="censkills-product-image-wrap">
 							<?php if ($i % 3 === 0) : ?>
-								<span class="price-old text-sm text-light line-through ml-xs" style="text-decoration: line-through; color: #888;">399.000đ</span>
+								<span class="censkills-badge sale-badge">SALE</span>
+							<?php else: ?>
+								<span class="censkills-badge new-badge">NEW</span>
 							<?php endif; ?>
+							<img src="https://placehold.co/400x500/e2e2e4/333333?text=Product+<?php echo $i; ?>" alt="Product Name" class="censkills-product-img">
 						</div>
+					</a>
+					<div class="censkills-product-swatches">
+						<span class="swatch bg-black"></span>
+						<span class="swatch bg-gray-light"></span>
+						<span class="swatch bg-gray-dark"></span>
+					</div>
+					<h2 class="censkills-product-title"><a href="#">Bó chân Essentials Coolmate - Product <?php echo $i; ?></a></h2>
+					<div class="censkills-product-price">
+						<?php if ($i % 3 === 0) : ?>
+							<del>129.000đ</del> <ins>99.000đ</ins>
+						<?php else: ?>
+							<span>99.000đ</span>
+						<?php endif; ?>
 					</div>
 				</div>
 				<?php endfor; ?>
