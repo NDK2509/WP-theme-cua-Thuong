@@ -329,20 +329,26 @@ button {
 	text-transform: uppercase;
 }
 
-.nav-link {
-	font-weight: 500;
+.nav-menu a {
+	font-weight: 700;
 	text-transform: uppercase;
 	font-size: 0.9rem;
 	letter-spacing: 0.5px;
 	color: var(--color-text);
 	position: relative;
+	transition: font-weight var(--transition-fast);
+	display: inline-block;
 }
 
-.nav-link:hover {
+.nav-menu a:hover,
+.nav-menu li.current-menu-item>a,
+.nav-menu li.current_page_item>a {
 	color: var(--color-primary);
+	font-weight: 700;
+	/* Bold for hover and active state */
 }
 
-.nav-link::after {
+.nav-menu a::after {
 	content: '';
 	position: absolute;
 	width: 0;
@@ -353,8 +359,11 @@ button {
 	transition: width var(--transition-fast);
 }
 
-.nav-link:hover::after {
+.nav-menu a:hover::after,
+.nav-menu li.current-menu-item>a::after,
+.nav-menu li.current_page_item>a::after {
 	width: 100%;
+	/* Persistent indicator for active state */
 }
 
 .text-red {
