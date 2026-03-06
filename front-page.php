@@ -9,20 +9,58 @@ get_header(); ?>
 
 <main id="primary" class="site-main">
 
-	<!-- Hero Banner -->
-	<section class="hero-section">
-		<div class="hero-image" style="background-image: url('https://placehold.co/1920x800/000000/ffffff?text=CenSkills+Banner');">
-			<!-- A real Coolmate hero would use a slider like Swiper.js, here we use a static hero block -->
-		</div>
-		<div class="hero-content text-center">
-			<h2 class="hero-title text-white">THƯƠNG HIỆU THỜI TRANG CHẤT LƯỢNG</h2>
-			<p class="hero-subtitle text-white">Trải nghiệm mua sắm tuyệt vời cùng CenSkills. Sản xuất tại Việt Nam.</p>
-			<div class="flex justify-center gap-md mt-lg">
-				<a href="#" class="btn btn-primary" style="background-color: white; color: black;">Mua Ngay</a>
-				<a href="#" class="btn btn-outline" style="border-color: white; color: white;">Khám Phá</a>
+	<!-- Hero Banner Slider -->
+	<section class="hero-swiper-section relative">
+		<div class="swiper hero-swiper">
+			<div class="swiper-wrapper">
+				<?php if ( is_active_sidebar( 'front-page-banners' ) ) : ?>
+					<?php dynamic_sidebar( 'front-page-banners' ); ?>
+				<?php else : ?>
+					<div class="swiper-slide hero-section">
+						<div class="hero-image" style="background-image: url('https://placehold.co/1920x800/000000/ffffff?text=CenSkills+Banner');">
+							<!-- A real Coolmate hero would use a slider like Swiper.js, here we use a static hero block -->
+						</div>
+						<div class="hero-content text-center">
+							<h2 class="hero-title text-white">THƯƠNG HIỆU THỜI TRANG CHẤT LƯỢNG</h2>
+							<p class="hero-subtitle text-white">Trải nghiệm mua sắm tuyệt vời cùng CenSkills. Sản xuất tại Việt Nam.</p>
+							<div class="flex justify-center gap-md mt-lg">
+								<a href="#" class="btn btn-primary" style="background-color: white; color: black;">Mua Ngay</a>
+								<a href="#" class="btn btn-outline" style="border-color: white; color: white;">Khám Phá</a>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
 			</div>
+			<!-- If we need pagination -->
+			<div class="swiper-pagination"></div>
+
+			<!-- If we need navigation buttons -->
+			<div class="swiper-button-prev"></div>
+			<div class="swiper-button-next"></div>
 		</div>
 	</section>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			if (typeof Swiper !== 'undefined') {
+				const heroSwiper = new Swiper('.hero-swiper', {
+					loop: true,
+					autoplay: {
+						delay: 3000,
+						disableOnInteraction: false,
+					},
+					pagination: {
+						el: '.swiper-pagination',
+						clickable: true,
+					},
+					navigation: {
+						nextEl: '.swiper-button-next',
+						prevEl: '.swiper-button-prev',
+					},
+				});
+			}
+		});
+	</script>
 
 	<div class="container pb-xxl">
 
