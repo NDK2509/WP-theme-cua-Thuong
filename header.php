@@ -77,6 +77,116 @@
 			</div>
 			
 		</div>
+
+		<!-- Product Search Form (hidden by default) -->
+		<div class="header-search-form container" style="display: none; padding-bottom: var(--spacing-sm); position: relative;">
+			<form role="search" method="get" class="search-form flex gap-sm" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+				<input type="hidden" name="post_type" value="product" />
+				<input type="search" class="search-field w-full" placeholder="Tìm kiếm sản phẩm..." value="<?php echo get_search_query(); ?>" name="s" required style="padding: 10px; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); outline: none;" autocomplete="off" />
+				<button type="submit" class="search-submit btn btn-primary" style="white-space: nowrap; padding: 10px 20px;">Tìm Kiếm</button>
+			</form>
+			<!-- Suggestions Dropdown -->
+			<div id="search-suggestions" class="search-suggestions-container" style="display: none;"></div>
+		</div>
+
+		<script>
+			// Make ajaxurl available to our frontend script
+			const censkills_ajax = {
+				ajaxurl: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>'
+			};
+
+			document.addEventListener('DOMContentLoaded', function() {
+				const searchToggle = document.querySelector('.search-toggle');
+				const searchForm = document.querySelector('.header-search-form');
+				const searchField = document.querySelector('.search-field');
+				const suggestionsContainer = document.getElementById('search-suggestions');
+				let debounceTimer;
+
+				if (searchToggle && searchForm && searchField && suggestionsContainer) {
+					// Toggle Search Bar
+					searchToggle.addEventListener('click', function(e) {
+						e.preventDefault();
+						if (searchForm.style.display === 'none' || searchForm.style.display === '') {
+							searchForm.style.display = 'block';
+							searchField.focus();
+						} else {
+							searchForm.style.display = 'none';
+							suggestionsContainer.style.display = 'none';
+						}
+					});
+
+					// Close when clicking outside
+					document.addEventListener('click', function(event) {
+						if (!searchToggle.contains(event.target) && !searchForm.contains(event.target)) {
+							searchForm.style.display = 'none';
+							suggestionsContainer.style.display = 'none';
+						}
+					});
+
+					// AJAX Search logic with 1s debounce
+					searchField.addEventListener('input', function() {
+						const term = this.value.trim();
+						
+						clearTimeout(debounceTimer);
+						
+						if (term.length < 2) {
+							suggestionsContainer.style.display = 'none';
+							suggestionsContainer.innerHTML = '';
+							return;
+						}
+
+						// Show simple loading state (optional)
+						suggestionsContainer.style.display = 'block';
+						suggestionsContainer.innerHTML = '<div class="suggestion-loading p-sm text-center text-sm text-text-light">Đang tìm kiếm...</div>';
+
+						// 1-second delay (1000ms)
+						debounceTimer = setTimeout(function() {
+							const data = new URLSearchParams();
+							data.append('action', 'censkills_ajax_search');
+							data.append('term', term);
+
+							fetch(typeof censkills_ajax !== 'undefined' ? censkills_ajax.ajaxurl : '/wp-admin/admin-ajax.php', {
+								method: 'POST',
+								body: data
+							})
+							.then(res => res.json())
+							.then(response => {
+								if (response.success && response.data.length > 0) {
+									let html = '';
+									response.data.forEach(function(product) {
+										html += `
+											<a href="${product.url}" class="suggestion-item flex items-center gap-sm p-sm">
+												<div class="suggestion-img">
+													<img src="${product.image}" alt="${product.title}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">
+												</div>
+												<div class="suggestion-info flex-col justify-center">
+													<span class="suggestion-title font-medium text-sm text-text">${product.title}</span>
+												</div>
+											</a>
+										`;
+									});
+									
+									// Append "View all results" link
+									const searchUrl = '<?php echo esc_url( home_url( '/' ) ); ?>?s=' + encodeURIComponent(term) + '&post_type=product';
+									html += `
+										<a href="${searchUrl}" class="suggestion-item view-all block text-center p-sm text-sm text-primary font-medium hover-bg-gray">
+											Xem tất cả kết quả cho "${term}"
+										</a>
+									`;
+									
+									suggestionsContainer.innerHTML = html;
+								} else {
+									suggestionsContainer.innerHTML = '<div class="p-sm text-center text-sm text-text-light">Không tìm thấy sản phẩm nào.</div>';
+								}
+							})
+							.catch(() => {
+								suggestionsContainer.innerHTML = '<div class="p-sm text-center text-sm text-red">Đã có lỗi xảy ra.</div>';
+							});
+						}, 1000);
+					});
+				}
+			});
+		</script>
 	</header><!-- #masthead -->
 	
 	<!-- Main Content Area -->

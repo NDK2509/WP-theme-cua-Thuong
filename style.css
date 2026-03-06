@@ -410,6 +410,68 @@ button {
 	border-radius: 50%;
 }
 
+/* Header Search Form */
+.header-search-form {
+	width: 100%;
+	animation: slideDown 0.2s ease-out forwards;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Search Suggestions */
+.search-suggestions-container {
+	position: absolute;
+	top: 100%;
+	left: var(--container-padding);
+	right: var(--container-padding);
+	background-color: var(--color-bg-white);
+	border: 1px solid var(--color-border);
+	border-top: none;
+	border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm);
+	box-shadow: var(--box-shadow-md);
+	z-index: 1001;
+	max-height: 400px;
+	overflow-y: auto;
+	margin-top: -var(--spacing-sm);
+}
+
+.suggestion-item {
+	border-bottom: 1px solid var(--color-border);
+	transition: background-color var(--transition-fast);
+}
+
+.suggestion-item:last-child {
+	border-bottom: none;
+}
+
+.suggestion-item:hover {
+	background-color: var(--color-bg);
+}
+
+.suggestion-img {
+	flex-shrink: 0;
+}
+
+.suggestion-info {
+	overflow: hidden;
+}
+
+.suggestion-title {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /* ==========================================================================
    Homepage Styles
    ========================================================================== */
