@@ -1,10 +1,10 @@
 /*
 Theme Name: CenSkills Theme
 Theme URI: 
-Author: NDK
+Author: Hoai Thuong
 Author URI: 
-Description: Custom WordPress theme for CenSkills, inspired by coolmate.me
-Version: 1.0
+Description: Custom WordPress theme for CenSkills
+Version: 1.0.2
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: censkills-theme
@@ -1476,5 +1476,206 @@ body.home main.site-main {
 
 #review_form .form-submit input[type="submit"]:hover {
 	background-color: rgba(255, 255, 255, 0.2);
+	color: #fff;
+}
+
+/* ==========================================================================
+   Shop Filter Sidebar Layout
+   ========================================================================== */
+
+/* The main layout wrapper for shop/archive */
+.censkills-shop-layout {
+	align-items: flex-start;
+}
+
+/* Sidebar Wrapper */
+.censkills-shop-sidebar {
+	background-color: transparent;
+}
+
+/* Loading state for product container */
+.censkills-shop-content {
+	transition: opacity var(--transition-normal);
+}
+
+.filter-main-title {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin-bottom: var(--spacing-lg);
+	border-bottom: 2px solid var(--color-border);
+	padding-bottom: var(--spacing-sm);
+	color: var(--color-text);
+}
+
+.censkills-filter-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--spacing-lg);
+}
+
+.filter-section {
+	margin-bottom: var(--spacing-sm);
+}
+
+.filter-title {
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin-bottom: var(--spacing-md);
+	color: var(--color-text);
+}
+
+.filter-options {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+/* Custom Checkbox / Radio styling */
+.filter-checkbox,
+.filter-radio {
+	display: flex;
+	align-items: center;
+	position: relative;
+	padding-left: 30px;
+	cursor: pointer;
+	font-size: 1rem;
+	color: var(--color-text-light);
+	user-select: none;
+	transition: color var(--transition-fast);
+}
+
+.filter-checkbox:hover,
+.filter-radio:hover {
+	color: var(--color-text);
+}
+
+.filter-checkbox input,
+.filter-radio input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+	height: 0;
+	width: 0;
+}
+
+/* Custom Checkmark Block */
+.checkmark {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
+	height: 20px;
+	width: 20px;
+	background-color: #fff;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	transition: all var(--transition-fast);
+}
+
+.filter-checkbox:hover input~.checkmark {
+	border-color: #666;
+}
+
+.filter-checkbox input:checked~.checkmark {
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
+}
+
+.checkmark:after {
+	content: "";
+	position: absolute;
+	display: none;
+	left: 6px;
+	top: 2px;
+	width: 5px;
+	height: 10px;
+	border: solid white;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+.filter-checkbox input:checked~.checkmark:after {
+	display: block;
+}
+
+/* Custom Radiomark Block */
+.radiomark {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
+	height: 20px;
+	width: 20px;
+	background-color: #fff;
+	border: 1px solid var(--color-border);
+	border-radius: 50%;
+	transition: all var(--transition-fast);
+}
+
+.filter-radio:hover input~.radiomark {
+	border-color: #666;
+}
+
+.filter-radio input:checked~.radiomark {
+	border-color: var(--color-primary);
+}
+
+.radiomark:after {
+	content: "";
+	position: absolute;
+	display: none;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--color-primary);
+}
+
+.filter-radio input:checked~.radiomark:after {
+	display: block;
+}
+
+/* Size Buttons Grid */
+.filter-size-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.filter-size-btn {
+	cursor: pointer;
+	user-select: none;
+}
+
+.filter-size-btn .hidden-checkbox {
+	display: none;
+}
+
+.filter-size-btn .size-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	height: 40px;
+	padding: 0 10px;
+	background-color: #fff;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--color-text-light);
+	transition: all var(--transition-fast);
+}
+
+.filter-size-btn:hover .size-label {
+	border-color: #666;
+	color: var(--color-text);
+}
+
+.filter-size-btn .hidden-checkbox:checked+.size-label {
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
 	color: #fff;
 }

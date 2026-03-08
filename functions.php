@@ -75,3 +75,13 @@ function censkills_ajax_search() {
 }
 add_action( 'wp_ajax_censkills_ajax_search', 'censkills_ajax_search' );
 add_action( 'wp_ajax_nopriv_censkills_ajax_search', 'censkills_ajax_search' );
+
+/**
+ * Shortcode to display the Front Page Categories & Products Grids
+ */
+function censkills_front_page_grids_shortcode() {
+	ob_start();
+	get_template_part( 'parts/front-page', 'content' );
+	return ob_get_clean();
+}
+add_shortcode( 'censkills_front_page_grids', 'censkills_front_page_grids_shortcode' );

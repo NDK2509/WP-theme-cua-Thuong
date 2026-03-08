@@ -14,6 +14,11 @@ if ( ! function_exists( 'censkills_theme_scripts' ) ) :
 		wp_enqueue_script( 'swiper-script', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11.0.5', true );
 
 		wp_enqueue_style( 'censkills-theme-style', get_stylesheet_uri(), array(), $theme_version );
+
+		wp_enqueue_script( 'censkills-shop-filter', get_template_directory_uri() . '/assets/js/shop-filter.js', array( 'jquery' ), $theme_version, true );
+		wp_localize_script( 'censkills-shop-filter', 'censkills_ajax', array(
+			'ajax_url' => admin_url( 'admin-ajax.php' )
+		) );
 	}
 endif;
 add_action( 'wp_enqueue_scripts', 'censkills_theme_scripts' );
