@@ -7,15 +7,18 @@
 
 if ( ! function_exists( 'censkills_theme_scripts' ) ) :
 	function censkills_theme_scripts() {
-		$theme_version = filemtime( get_template_directory() . '/style.css' );
-		
+		$theme_version  = filemtime( get_template_directory() . '/style.css' );
+		$filter_version = file_exists( get_template_directory() . '/assets/js/shop-filter.js' )
+			? filemtime( get_template_directory() . '/assets/js/shop-filter.js' )
+			: $theme_version;
+
 		// Swiper styles and scripts
 		wp_enqueue_style( 'swiper-style', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', array(), '11.0.5' );
 		wp_enqueue_script( 'swiper-script', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11.0.5', true );
 
 		wp_enqueue_style( 'censkills-theme-style', get_stylesheet_uri(), array(), $theme_version );
 
-		wp_enqueue_script( 'censkills-shop-filter', get_template_directory_uri() . '/assets/js/shop-filter.js', array( 'jquery' ), $theme_version, true );
+		wp_enqueue_script( 'censkills-shop-filter', get_template_directory_uri() . '/assets/js/shop-filter.js', array( 'jquery' ), $filter_version, true );
 		wp_localize_script( 'censkills-shop-filter', 'censkills_ajax', array(
 			'ajax_url' => admin_url( 'admin-ajax.php' )
 		) );

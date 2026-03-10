@@ -1,40 +1,53 @@
 jQuery(document).ready(function ($) {
     var $filterForm = $('#censkills-product-filter');
-    var $productContainer = $('ul.products'); // We will replace the inner products ul
 
     if ($filterForm.length === 0) {
         return;
     }
 
-    $filterForm.on('change', 'input', function (e) {
-        // Collect form data
+    // Resolve the AJAX URL — fall back to a relative path if the localized var is missing
+    var ajaxUrl = (typeof censkills_ajax !== 'undefined' && censkills_ajax.ajax_url)
+        ? censkills_ajax.ajax_url
+        : '/wp-admin/admin-ajax.php';
+
+    // Find the products container dynamically on each request
+    function getProductContainer() {
+        return $('.censkills-products-container, ul.products').first();
+    }
+
+    function runFilter() {
+        var $productContainer = getProductContainer();
         var formData = $filterForm.serialize();
 
-        // Visual feedback that it's loading
-        $productContainer.css('opacity', '0.5');
-        $productContainer.css('pointer-events', 'none');
+        // Visual feedback
+        $productContainer.css({ opacity: '0.5', 'pointer-events': 'none' });
 
         $.ajax({
-            url: censkills_ajax.ajax_url,
+            url: ajaxUrl,
             type: 'POST',
             data: formData,
             success: function (response) {
-                if (response.success) {
-                    $productContainer.html(response.data.html);
+                if (response && response.success) {
+                    var $newHtml = $(response.data.html);
+                    $productContainer.replaceWith($newHtml);
                 } else {
-                    console.error('Error fetching products:', response);
+                    console.error('Filter returned error:', response);
+                    getProductContainer().css({ opacity: '1', 'pointer-events': 'auto' });
                 }
             },
             error: function (xhr, status, error) {
-                console.error('AJAX Error:', error);
+                console.error('Filter AJAX error:', status, error);
+                getProductContainer().css({ opacity: '1', 'pointer-events': 'auto' });
             },
             complete: function () {
-                $productContainer.css('opacity', '1');
-                $productContainer.css('pointer-events', 'auto');
-
-                // Trigger an event so scripts like Lazy Load can re-init
+                getProductContainer().css({ opacity: '1', 'pointer-events': 'auto' });
                 $(document.body).trigger('post-load');
             }
         });
+    }
+
+    // Fire on any filter input change
+    $filterForm.on('change', 'input', function () {
+        runFilter();
     });
 });

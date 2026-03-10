@@ -1574,6 +1574,24 @@ body.home main.site-main {
 }
 
 
+/* No Results State (AJAX filter) */
+ul.products li.censkills-no-results {
+	width: 100%;
+	list-style: none;
+	grid-column: 1 / -1;
+	text-align: center;
+	padding: 60px 20px;
+	color: var(--color-text-light);
+	font-size: 1rem;
+	border: 1.5px dashed var(--color-border);
+	border-radius: var(--border-radius-md);
+}
+
+/* Suppress WooCommerce info icons inside products list */
+ul.products .woocommerce-info::before {
+	display: none !important;
+}
+
 /* ==========================================================================
    Shop Filter Sidebar Layout
    ========================================================================== */

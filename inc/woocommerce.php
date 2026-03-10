@@ -251,13 +251,11 @@ function censkills_filter_products_ajax() {
 	$args = array(
 		'post_type'      => 'product',
 		'post_status'    => 'publish',
+		'posts_per_page' => apply_filters( 'loop_shop_per_page', wc_get_default_products_per_row() * wc_get_default_product_rows_per_page() ),
 	);
-	
-	// Default posts per page
-	$args['posts_per_page'] = apply_filters( 'loop_shop_per_page', wc_get_default_products_per_row() * wc_get_default_product_rows_per_page() );
 
 	$tax_query = array( 'relation' => 'AND' );
-	
+
 	// Product Category
 	if ( ! empty( $_POST['product_cat'] ) ) {
 		$tax_query[] = array(
@@ -269,22 +267,20 @@ function censkills_filter_products_ajax() {
 
 	// Brand
 	if ( ! empty( $_POST['filter_brand'] ) && is_array( $_POST['filter_brand'] ) ) {
-		$brands = array_map( 'sanitize_text_field', $_POST['filter_brand'] );
 		$tax_query[] = array(
 			'taxonomy' => 'pa_brand',
 			'field'    => 'slug',
-			'terms'    => $brands,
+			'terms'    => array_map( 'sanitize_text_field', $_POST['filter_brand'] ),
 			'operator' => 'IN',
 		);
 	}
 
 	// Size
 	if ( ! empty( $_POST['filter_size'] ) && is_array( $_POST['filter_size'] ) ) {
-		$sizes = array_map( 'sanitize_text_field', $_POST['filter_size'] );
 		$tax_query[] = array(
 			'taxonomy' => 'pa_size',
 			'field'    => 'slug',
-			'terms'    => $sizes,
+			'terms'    => array_map( 'sanitize_text_field', $_POST['filter_size'] ),
 			'operator' => 'IN',
 		);
 	}
@@ -293,66 +289,60 @@ function censkills_filter_products_ajax() {
 		$args['tax_query'] = $tax_query;
 	}
 
-	// Price
+	// Price — supports "min-max" and "min-" (open-ended)
 	if ( ! empty( $_POST['filter_price'] ) ) {
 		$price_range = sanitize_text_field( wp_unslash( $_POST['filter_price'] ) );
-		$prices = explode( '-', $price_range );
-		
-		$meta_query = array( 'relation' => 'AND' );
-		
-		if ( isset( $prices[0] ) && $prices[0] !== '' ) {
-			$min = intval( $prices[0] );
-			if ( isset( $prices[1] ) && $prices[1] !== '' ) {
-				$max = intval( $prices[1] );
+		$meta_query  = array( 'relation' => 'AND' );
+
+		if ( strpos( $price_range, '-' ) !== false ) {
+			$parts = explode( '-', $price_range, 2 );
+			$min   = isset( $parts[0] ) && $parts[0] !== '' ? intval( $parts[0] ) : null;
+			$max   = isset( $parts[1] ) && $parts[1] !== '' ? intval( $parts[1] ) : null;
+
+			if ( ! is_null( $min ) && ! is_null( $max ) ) {
 				$meta_query[] = array(
 					'key'     => '_price',
 					'value'   => array( $min, $max ),
 					'compare' => 'BETWEEN',
-					'type'    => 'NUMERIC'
+					'type'    => 'NUMERIC',
 				);
-			} else {
+			} elseif ( ! is_null( $min ) ) {
 				$meta_query[] = array(
 					'key'     => '_price',
 					'value'   => $min,
 					'compare' => '>=',
-					'type'    => 'NUMERIC'
+					'type'    => 'NUMERIC',
 				);
 			}
 		}
-		
+
 		if ( count( $meta_query ) > 1 ) {
 			$args['meta_query'] = $meta_query;
 		}
 	}
 
-	// Execute query
+	// Run the query
 	$query = new WP_Query( $args );
 
-	// Override global wp_query so standard hooks work correctly (pagination, result count, etc)
+	// Temporarily swap global $wp_query so WC loop hooks work
 	global $wp_query;
 	$temp_query = $wp_query;
-	$wp_query   = clone $query;
+	$wp_query   = $query; // not clone — use the actual query object
 
 	ob_start();
+	echo '<ul class="products columns-4">';
 
-	if ( woocommerce_product_loop() ) {
-		do_action( 'woocommerce_before_shop_loop' );
-		woocommerce_product_loop_start();
-
-		if ( wc_get_loop_prop( 'total' ) ) {
-			while ( have_posts() ) {
-				the_post();
-				do_action( 'woocommerce_shop_loop' );
-				wc_get_template_part( 'content', 'product' );
-			}
+	if ( $query->have_posts() ) {
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			do_action( 'woocommerce_shop_loop' );
+			wc_get_template_part( 'content', 'product' );
 		}
-
-		woocommerce_product_loop_end();
-		do_action( 'woocommerce_after_shop_loop' );
 	} else {
-		do_action( 'woocommerce_no_products_found' );
+		echo '<li class="censkills-no-results">Không tìm thấy sản phẩm phù hợp.</li>';
 	}
 
+	echo '</ul>';
 	$html = ob_get_clean();
 
 	// Restore global query
@@ -360,4 +350,6 @@ function censkills_filter_products_ajax() {
 	wp_reset_postdata();
 
 	wp_send_json_success( array( 'html' => $html ) );
+	wp_die();
 }
+
