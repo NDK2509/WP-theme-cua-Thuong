@@ -585,6 +585,17 @@ body.drawer-open {
 	overflow: hidden;
 }
 
+/* Push drawer below the WordPress admin bar when it's visible */
+body.admin-bar .mobile-drawer {
+	top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar .mobile-drawer {
+		top: 46px;
+	}
+}
+
 .mobile-drawer.is-open {
 	transform: translateX(0);
 }
