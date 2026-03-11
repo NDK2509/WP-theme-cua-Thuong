@@ -22,6 +22,11 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require get_template_directory() . '/inc/woocommerce.php';
 }
 
+// Include Elementor custom widgets if Elementor is active.
+if ( did_action( 'elementor/loaded' ) || defined( 'ELEMENTOR_VERSION' ) ) {
+	require get_template_directory() . '/inc/elementor-widgets.php';
+}
+
 /**
  * AJAX Product Search Handler
  */
