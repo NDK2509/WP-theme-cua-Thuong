@@ -90,3 +90,72 @@ function censkills_front_page_grids_shortcode() {
 	return ob_get_clean();
 }
 add_shortcode( 'censkills_front_page_grids', 'censkills_front_page_grids_shortcode' );
+
+/**
+ * AJAX: Blog Load More
+ * Returns rendered post cards for the Blog page template.
+ */
+function censkills_blog_load_more() {
+	$page     = isset( $_POST['page'] )     ? absint( $_POST['page'] )     : 1;
+	$per_page = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 9;
+	$cat_id   = isset( $_POST['cat'] )      ? absint( $_POST['cat'] )      : 0;
+
+	$args = array(
+		'post_type'      => 'post',
+		'post_status'    => 'publish',
+		'posts_per_page' => $per_page,
+		'paged'          => $page + 1, // page arg is 0-indexed from JS
+	);
+
+	if ( $cat_id ) {
+		$args['cat'] = $cat_id;
+	}
+
+	$query  = new WP_Query( $args );
+	$total  = $query->found_posts;
+	$shown  = min( ( $page ) * $per_page, $total );
+
+	ob_start();
+	while ( $query->have_posts() ) :
+		$query->the_post();
+		$thumb = get_the_post_thumbnail_url( get_the_ID(), 'medium_large' );
+		$cats  = get_the_category();
+		$cat   = ! empty( $cats ) ? $cats[0] : null;
+		?>
+		<article class="blog-grid-card">
+			<a href="<?php the_permalink(); ?>" class="blog-card-img-wrap" tabindex="-1">
+				<?php if ( $thumb ) : ?>
+					<img src="<?php echo esc_url( $thumb ); ?>" alt="<?php the_title_attribute(); ?>" class="blog-card-img" loading="lazy">
+				<?php else : ?>
+					<div class="blog-card-img-placeholder"></div>
+				<?php endif; ?>
+				<?php if ( $cat ) : ?>
+					<span class="blog-card-cat-badge"><?php echo esc_html( $cat->name ); ?></span>
+				<?php endif; ?>
+			</a>
+			<div class="blog-card-body">
+				<?php if ( $cat ) : ?>
+					<span class="blog-card-cat-label"><?php echo esc_html( $cat->name ); ?></span>
+				<?php endif; ?>
+				<h3 class="blog-card-title">
+					<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+				</h3>
+				<p class="blog-card-excerpt"><?php echo wp_trim_words( get_the_excerpt(), 18 ); ?></p>
+				<div class="blog-card-meta">
+					<span class="blog-card-date"><?php echo get_the_date( 'd/m/Y' ); ?></span>
+				</div>
+			</div>
+		</article>
+		<?php
+	endwhile;
+	wp_reset_postdata();
+	$html = ob_get_clean();
+
+	wp_send_json_success( array(
+		'html'  => $html,
+		'total' => $total,
+		'shown' => $shown,
+	) );
+}
+add_action( 'wp_ajax_censkills_blog_load_more',        'censkills_blog_load_more' );
+add_action( 'wp_ajax_nopriv_censkills_blog_load_more', 'censkills_blog_load_more' );
