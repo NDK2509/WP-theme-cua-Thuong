@@ -33,7 +33,8 @@
 	<!-- Main Navigation Header -->
 	<header id="masthead" class="site-header sticky-header shadow-sm">
 		<div class="container flex justify-between items-center header-inner">
-			
+
+
 			<!-- Logo -->
 			<div class="site-branding">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo-link">
@@ -41,7 +42,7 @@
 				</a>
 			</div>
 			
-			<!-- Primary Menu -->
+			<!-- Primary Menu (desktop) -->
 			<nav id="site-navigation" class="main-navigation">
 				<?php
 				wp_nav_menu(
@@ -68,7 +69,7 @@
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
 				</button>
 				<?php $account_url = class_exists( 'WooCommerce' ) ? wc_get_page_permalink( 'myaccount' ) : '#'; ?>
-				<?php 
+				<?php
 				$cart_url   = class_exists( 'WooCommerce' ) ? wc_get_cart_url() : '#';
 				$cart_count = class_exists( 'WooCommerce' ) && ! is_null( WC()->cart ) ? WC()->cart->get_cart_contents_count() : 0;
 				?>
@@ -79,6 +80,13 @@
 				<a href="<?php echo esc_url( $account_url ); ?>" class="icon-btn account-link" aria-label="Tài khoản">
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
 				</a>
+
+				<!-- Hamburger (mobile only) -->
+				<button class="hamburger-btn" id="drawer-toggle" aria-label="Mở menu" aria-expanded="false" aria-controls="mobile-drawer">
+					<span class="hamburger-bar"></span>
+					<span class="hamburger-bar"></span>
+					<span class="hamburger-bar"></span>
+				</button>
 			</div>
 			
 		</div>
@@ -102,13 +110,12 @@
 
 			document.addEventListener('DOMContentLoaded', function() {
 				const searchToggle = document.querySelector('.search-toggle');
-				const searchForm = document.querySelector('.header-search-form');
-				const searchField = document.querySelector('.search-field');
+				const searchForm   = document.querySelector('.header-search-form');
+				const searchField  = document.querySelector('.search-field');
 				const suggestionsContainer = document.getElementById('search-suggestions');
 				let debounceTimer;
 
 				if (searchToggle && searchForm && searchField && suggestionsContainer) {
-					// Toggle Search Bar
 					searchToggle.addEventListener('click', function(e) {
 						e.preventDefault();
 						if (searchForm.style.display === 'none' || searchForm.style.display === '') {
@@ -120,7 +127,6 @@
 						}
 					});
 
-					// Close when clicking outside
 					document.addEventListener('click', function(event) {
 						if (!searchToggle.contains(event.target) && !searchForm.contains(event.target)) {
 							searchForm.style.display = 'none';
@@ -128,57 +134,32 @@
 						}
 					});
 
-					// AJAX Search logic with 1s debounce
 					searchField.addEventListener('input', function() {
 						const term = this.value.trim();
-						
 						clearTimeout(debounceTimer);
-						
 						if (term.length < 2) {
 							suggestionsContainer.style.display = 'none';
 							suggestionsContainer.innerHTML = '';
 							return;
 						}
-
-						// Show simple loading state (optional)
 						suggestionsContainer.style.display = 'block';
 						suggestionsContainer.innerHTML = '<div class="suggestion-loading p-sm text-center text-sm text-text-light">Đang tìm kiếm...</div>';
-
-						// 1-second delay (1000ms)
 						debounceTimer = setTimeout(function() {
 							const data = new URLSearchParams();
 							data.append('action', 'censkills_ajax_search');
 							data.append('term', term);
-
 							fetch(typeof censkills_ajax !== 'undefined' ? censkills_ajax.ajaxurl : '/wp-admin/admin-ajax.php', {
-								method: 'POST',
-								body: data
+								method: 'POST', body: data
 							})
 							.then(res => res.json())
 							.then(response => {
 								if (response.success && response.data.length > 0) {
 									let html = '';
 									response.data.forEach(function(product) {
-										html += `
-											<a href="${product.url}" class="suggestion-item flex items-center gap-sm p-sm">
-												<div class="suggestion-img">
-													<img src="${product.image}" alt="${product.title}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">
-												</div>
-												<div class="suggestion-info flex-col justify-center">
-													<span class="suggestion-title font-medium text-sm text-text">${product.title}</span>
-												</div>
-											</a>
-										`;
+										html += `<a href="${product.url}" class="suggestion-item flex items-center gap-sm p-sm"><div class="suggestion-img"><img src="${product.image}" alt="${product.title}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;"></div><div class="suggestion-info flex-col justify-center"><span class="suggestion-title font-medium text-sm text-text">${product.title}</span></div></a>`;
 									});
-									
-									// Append "View all results" link
 									const searchUrl = '<?php echo esc_url( home_url( '/' ) ); ?>?s=' + encodeURIComponent(term) + '&post_type=product';
-									html += `
-										<a href="${searchUrl}" class="suggestion-item view-all block text-center p-sm text-sm text-primary font-medium hover-bg-gray">
-											Xem tất cả kết quả cho "${term}"
-										</a>
-									`;
-									
+									html += `<a href="${searchUrl}" class="suggestion-item view-all block text-center p-sm text-sm text-primary font-medium hover-bg-gray">Xem tất cả kết quả cho "${term}"</a>`;
 									suggestionsContainer.innerHTML = html;
 								} else {
 									suggestionsContainer.innerHTML = '<div class="p-sm text-center text-sm text-text-light">Không tìm thấy sản phẩm nào.</div>';
@@ -190,9 +171,144 @@
 						}, 1000);
 					});
 				}
+
+				// ── Mobile Sidebar Drawer ──────────────────────────────────────────────
+				const drawerToggle  = document.getElementById('drawer-toggle');
+				const mobileDrawer  = document.getElementById('mobile-drawer');
+				const drawerClose   = document.getElementById('drawer-close');
+				const drawerOverlay = document.getElementById('drawer-overlay');
+
+				function openDrawer() {
+					mobileDrawer.classList.add('is-open');
+					drawerOverlay.classList.add('is-visible');
+					document.body.classList.add('drawer-open');
+					drawerToggle.setAttribute('aria-expanded', 'true');
+					if (drawerClose) drawerClose.focus();
+				}
+
+				function closeDrawer() {
+					mobileDrawer.classList.remove('is-open');
+					drawerOverlay.classList.remove('is-visible');
+					document.body.classList.remove('drawer-open');
+					drawerToggle.setAttribute('aria-expanded', 'false');
+					drawerToggle.focus();
+				}
+
+				if (drawerToggle && mobileDrawer) {
+					drawerToggle.addEventListener('click', openDrawer);
+					if (drawerClose)   drawerClose.addEventListener('click', closeDrawer);
+					if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+					// ESC key
+					document.addEventListener('keydown', function(e) {
+						if (e.key === 'Escape' && mobileDrawer.classList.contains('is-open')) closeDrawer();
+					});
+
+					// Close on link click
+					mobileDrawer.querySelectorAll('a').forEach(function(link) {
+						link.addEventListener('click', closeDrawer);
+					});
+
+					// Swipe right to close
+					let touchStartX = 0;
+					mobileDrawer.addEventListener('touchstart', function(e) {
+						touchStartX = e.touches[0].clientX;
+					}, { passive: true });
+					mobileDrawer.addEventListener('touchend', function(e) {
+						if ((e.changedTouches[0].clientX - touchStartX) > 60) closeDrawer();
+					}, { passive: true });
+				}
 			});
 		</script>
 	</header><!-- #masthead -->
-	
+
+	<!-- ── Mobile Sidebar Drawer ─────────────────────────────────────── -->
+	<div id="mobile-drawer" class="mobile-drawer" role="dialog" aria-modal="true" aria-label="Menu điều hướng">
+
+		<!-- Drawer Header -->
+		<div class="drawer-header">
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="drawer-logo">
+				<span class="logo-text">CenSkills</span>
+			</a>
+			<button id="drawer-close" class="drawer-close-btn" aria-label="Đóng menu">
+				<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+			</button>
+		</div>
+
+		<!-- Drawer Body -->
+		<div class="drawer-body">
+
+			<!-- Primary Nav -->
+			<nav class="drawer-nav" aria-label="Menu chính">
+				<?php
+				wp_nav_menu(
+					array(
+						'theme_location' => 'primary',
+						'menu_id'        => 'mobile-menu',
+						'menu_class'     => 'drawer-menu',
+						'container'      => false,
+						'depth'          => 2,
+						'fallback_cb'    => false,
+					)
+				);
+				?>
+			</nav>
+
+			<div class="drawer-divider"></div>
+
+			<!-- Quick Links -->
+			<div class="drawer-section-label">Khám phá</div>
+			<div class="drawer-quick-links">
+				<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" class="drawer-quick-link">
+					<span class="drawer-quick-icon">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+					</span>
+					Cửa hàng
+					<svg class="drawer-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+				</a>
+				<a href="<?php echo esc_url( home_url( '/blog' ) ); ?>" class="drawer-quick-link">
+					<span class="drawer-quick-icon">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+					</span>
+					Blog
+					<svg class="drawer-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+				</a>
+				<a href="<?php echo esc_url( home_url( '/cskh' ) ); ?>" class="drawer-quick-link">
+					<span class="drawer-quick-icon">
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.42 2 2 0 0 1 3.62 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.83a16 16 0 0 0 6.06 6.06l.55-.85a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.28 16z"/></svg>
+					</span>
+					CSKH
+					<svg class="drawer-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+				</a>
+			</div>
+
+			<div class="drawer-divider"></div>
+
+			<!-- Account & Cart -->
+			<?php
+			$d_account_url = class_exists( 'WooCommerce' ) ? wc_get_page_permalink( 'myaccount' ) : '#';
+			$d_cart_url    = class_exists( 'WooCommerce' ) ? wc_get_cart_url() : '#';
+			$d_cart_count  = class_exists( 'WooCommerce' ) && ! is_null( WC()->cart ) ? WC()->cart->get_cart_contents_count() : 0;
+			?>
+			<div class="drawer-account-row">
+				<a href="<?php echo esc_url( $d_account_url ); ?>" class="drawer-account-btn">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+					Tài khoản
+				</a>
+				<a href="<?php echo esc_url( $d_cart_url ); ?>" class="drawer-account-btn drawer-cart-btn">
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+					Giỏ hàng
+					<?php if ( $d_cart_count > 0 ) : ?>
+						<span class="drawer-cart-badge"><?php echo esc_html( $d_cart_count ); ?></span>
+					<?php endif; ?>
+				</a>
+			</div>
+
+		</div><!-- .drawer-body -->
+	</div><!-- #mobile-drawer -->
+
+	<!-- Overlay / Backdrop -->
+	<div id="drawer-overlay" class="drawer-overlay" aria-hidden="true"></div>
+
 	<!-- Main Content Area -->
 	<div id="content" class="site-content">

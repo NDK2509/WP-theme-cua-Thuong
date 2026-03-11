@@ -328,6 +328,21 @@ button {
 	color: white;
 }
 
+@media (max-width: 1023px) {
+	.top-bar-nav {
+		display: none;
+	}
+
+	.top-bar .container {
+		justify-content: center;
+	}
+
+	.top-bar .container > span {
+		font-size: 0.72rem;
+		text-align: center;
+	}
+}
+
 .sticky-header {
 	position: sticky;
 	top: 0;
@@ -494,8 +509,326 @@ button {
 }
 
 /* ==========================================================================
+   Mobile Sidebar Drawer
+   ========================================================================== */
+
+/* ── Hamburger button (hidden on desktop) ──────────────────────────────── */
+.hamburger-btn {
+	display: none;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	width: 40px;
+	height: 40px;
+	padding: 6px;
+	border-radius: var(--border-radius-sm);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	transition: background var(--transition-fast);
+	flex-shrink: 0;
+	z-index: 10;
+}
+
+.hamburger-btn:hover {
+	background: rgba(0, 0, 0, 0.06);
+}
+
+.hamburger-bar {
+	display: block;
+	width: 22px;
+	height: 2px;
+	background-color: currentColor;
+	border-radius: 2px;
+	transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, background-color 0.3s ease;
+	transform-origin: center;
+}
+
+
+
+/* ── Drawer overlay backdrop ────────────────────────────────────────────── */
+.drawer-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0);
+	z-index: 1099;
+	transition: background 0.35s ease;
+}
+
+.drawer-overlay.is-visible {
+	display: block;
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(2px);
+}
+
+/* Prevent scroll when drawer open */
+body.drawer-open {
+	overflow: hidden;
+}
+
+/* ── Drawer panel ───────────────────────────────────────────────────────── */
+.mobile-drawer {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: min(80vw, 320px);
+	background: var(--color-bg-white);
+	z-index: 1100;
+	display: flex;
+	flex-direction: column;
+	transform: translateX(100%);
+	transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
+	overflow: hidden;
+}
+
+.mobile-drawer.is-open {
+	transform: translateX(0);
+}
+
+/* ── Drawer header ──────────────────────────────────────────────────────── */
+.drawer-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 var(--spacing-sm);
+	height: 64px;
+	border-bottom: 1px solid var(--color-border);
+	flex-shrink: 0;
+	background: var(--color-bg-white);
+}
+
+.drawer-logo {
+	text-decoration: none;
+}
+
+.drawer-logo .logo-text {
+	font-size: 1.3rem;
+	font-weight: 900;
+	letter-spacing: -0.5px;
+	color: var(--color-text);
+	text-transform: uppercase;
+}
+
+.drawer-close-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: var(--color-text-light);
+	transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.drawer-close-btn:hover {
+	background: rgba(0, 0, 0, 0.07);
+	color: var(--color-text);
+}
+
+/* ── Drawer body (scrollable) ───────────────────────────────────────────── */
+.drawer-body {
+	flex: 1;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding: var(--spacing-sm) 0 var(--spacing-lg);
+	-webkit-overflow-scrolling: touch;
+}
+
+/* ── Drawer nav menu ────────────────────────────────────────────────────── */
+.drawer-nav {
+	padding: 0 var(--spacing-sm);
+}
+
+.drawer-menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.drawer-menu li {
+	border-bottom: 1px solid var(--color-border);
+}
+
+.drawer-menu li:last-child {
+	border-bottom: none;
+}
+
+.drawer-menu a {
+	display: block;
+	padding: 14px 4px;
+	font-weight: 600;
+	font-size: 0.95rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--color-text);
+	transition: color var(--transition-fast), padding-left var(--transition-fast);
+}
+
+.drawer-menu a:hover {
+	color: var(--color-primary);
+	padding-left: 8px;
+}
+
+.drawer-menu li.current-menu-item > a,
+.drawer-menu li.current_page_item > a {
+	color: var(--color-primary);
+}
+
+/* Sub-menu items */
+.drawer-menu .sub-menu {
+	padding-left: var(--spacing-sm);
+	padding-bottom: 8px;
+}
+
+.drawer-menu .sub-menu li {
+	border-bottom: none;
+}
+
+.drawer-menu .sub-menu a {
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-transform: none;
+	letter-spacing: 0;
+	padding: 8px 4px;
+	color: var(--color-text-light);
+}
+
+.drawer-menu .sub-menu a:hover {
+	color: var(--color-primary);
+}
+
+/* ── Divider ────────────────────────────────────────────────────────────── */
+.drawer-divider {
+	height: 1px;
+	background: var(--color-border);
+	margin: var(--spacing-sm) var(--spacing-sm);
+}
+
+/* ── Section label ──────────────────────────────────────────────────────── */
+.drawer-section-label {
+	padding: 0 var(--spacing-sm) 6px;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--color-text-light);
+}
+
+/* ── Quick links (Cửa hàng, Blog, CSKH) ────────────────────────────────── */
+.drawer-quick-links {
+	padding: 0 var(--spacing-sm);
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.drawer-quick-link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 11px 10px;
+	border-radius: var(--border-radius-md);
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: var(--color-text);
+	text-decoration: none;
+	transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.drawer-quick-link:hover {
+	background: rgba(47, 90, 207, 0.07);
+	color: var(--color-primary);
+}
+
+.drawer-quick-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: var(--border-radius-sm);
+	background: rgba(47, 90, 207, 0.08);
+	color: var(--color-primary);
+	flex-shrink: 0;
+}
+
+.drawer-chevron {
+	margin-left: auto;
+	color: var(--color-text-light);
+	opacity: 0.5;
+}
+
+/* ── Account / Cart row ─────────────────────────────────────────────────── */
+.drawer-account-row {
+	display: flex;
+	gap: 8px;
+	padding: 0 var(--spacing-sm);
+}
+
+.drawer-account-btn {
+	flex: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 10px 8px;
+	border-radius: var(--border-radius-pill);
+	font-size: 0.85rem;
+	font-weight: 600;
+	border: 1.5px solid var(--color-border);
+	color: var(--color-text);
+	background: transparent;
+	text-decoration: none;
+	transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+	position: relative;
+}
+
+.drawer-account-btn:hover {
+	border-color: var(--color-text);
+	background: var(--color-text);
+	color: white;
+}
+
+.drawer-cart-btn {
+	background: var(--color-primary);
+	border-color: var(--color-primary);
+	color: white;
+}
+
+.drawer-cart-btn:hover {
+	background: var(--color-primary-hover);
+	border-color: var(--color-primary-hover);
+	color: white;
+}
+
+.drawer-cart-badge {
+	position: absolute;
+	top: -6px;
+	right: -4px;
+	background: var(--color-accent-red);
+	color: white;
+	font-size: 0.65rem;
+	font-weight: 700;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	border-radius: 999px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* ==========================================================================
    Homepage Styles
    ========================================================================== */
+
 
 /* Utility additions for responsive grid grids */
 @media (min-width: 1024px) {
@@ -886,8 +1219,38 @@ button {
 }
 
 /* ==========================================================================
+   Responsive Header / Drawer Breakpoints
+   ========================================================================== */
+
+/* Mobile: show hamburger, hide desktop nav */
+@media (max-width: 1023px) {
+	.hamburger-btn {
+		display: flex;
+	}
+
+	/* Hide desktop primary nav on mobile */
+	#site-navigation {
+		display: none;
+	}
+
+}
+
+/* Desktop: ensure drawer is fully off-screen and overlay hidden */
+@media (min-width: 1024px) {
+	.mobile-drawer,
+	.drawer-overlay {
+		display: none !important;
+	}
+
+	.hamburger-btn {
+		display: none !important;
+	}
+}
+
+/* ==========================================================================
    Footer Styles
    ========================================================================== */
+
 
 .site-footer {
 	background-color: var(--color-footer-bg);
