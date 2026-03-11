@@ -28,10 +28,6 @@ if ( ! function_exists( 'censkills_theme_scripts' ) ) :
 			wp_enqueue_script( 'censkills-checkout', get_template_directory_uri() . '/assets/js/checkout.js', array(), $theme_version, true );
 		}
 
-		// Product page + cart quantity stepper
-		if ( function_exists( 'is_product' ) && is_product() || function_exists( 'is_cart' ) && is_cart() ) {
-			wp_enqueue_script( 'censkills-product', get_template_directory_uri() . '/assets/js/product.js', array(), $theme_version, true );
-		}
 	}
 endif;
 add_action( 'wp_enqueue_scripts', 'censkills_theme_scripts' );
