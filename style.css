@@ -1233,6 +1233,11 @@ body.drawer-open {
 		display: none;
 	}
 
+	/* Smaller logo on mobile */
+	.logo-text {
+		font-size: 1.1rem;
+	}
+
 }
 
 /* Desktop: ensure drawer is fully off-screen and overlay hidden */
