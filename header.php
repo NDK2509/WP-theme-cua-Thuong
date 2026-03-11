@@ -20,8 +20,13 @@
 <div id="page" class="site">
 	<!-- Top Announcement Bar -->
 	<div class="top-bar">
-		<div class="container text-center text-sm font-medium">
-			Đổi trả miễn phí trong 60 ngày - Miễn phí vận chuyển đơn hàng trên 200k
+		<div class="container flex justify-between items-center text-sm font-medium">
+			<span>Đổi trả miễn phí trong 60 ngày - Miễn phí vận chuyển đơn hàng trên 200k</span>
+			<div class="top-bar-nav flex items-center gap-sm">
+				<a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" class="top-bar-btn">Cửa hàng</a>
+				<a href="<?php echo esc_url( home_url( '/blog' ) ); ?>" class="top-bar-btn">Blog</a>
+				<a href="<?php echo esc_url( home_url( '/cskh' ) ); ?>" class="top-bar-btn">CSKH</a>
+			</div>
 		</div>
 	</div>
 

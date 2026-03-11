@@ -312,6 +312,22 @@ button {
 	padding: var(--spacing-xs) 0;
 }
 
+.top-bar-btn {
+	background-color: rgba(255, 255, 255, 0.15);
+	color: white;
+	padding: 3px 12px;
+	border-radius: var(--border-radius-pill);
+	font-size: 0.8rem;
+	font-weight: 500;
+	transition: background-color var(--transition-fast);
+	white-space: nowrap;
+}
+
+.top-bar-btn:hover {
+	background-color: rgba(255, 255, 255, 0.3);
+	color: white;
+}
+
 .sticky-header {
 	position: sticky;
 	top: 0;
@@ -2093,6 +2109,7 @@ textarea.input-text {
 .woocommerce-privacy-policy-text {
 	margin-bottom: 20px;
 }
+
 /* ============================================================
    Right Column: Order Summary
    ============================================================ */
