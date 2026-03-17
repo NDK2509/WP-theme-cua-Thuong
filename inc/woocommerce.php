@@ -147,13 +147,13 @@ function censkills_product_filter_shortcode( $atts ) {
 	);
 
 	$brands = get_terms( array(
-		'taxonomy'   => 'pa_brand',
-		'hide_empty' => true,
+		'taxonomy'   => 'product_brand',
+		'hide_empty' => false,
 	) );
 
 	$sizes = get_terms( array(
 		'taxonomy'   => 'pa_size',
-		'hide_empty' => true,
+		'hide_empty' => false,
 	) );
 	
 	ob_start();
@@ -268,7 +268,7 @@ function censkills_filter_products_ajax() {
 	// Brand
 	if ( ! empty( $_POST['filter_brand'] ) && is_array( $_POST['filter_brand'] ) ) {
 		$tax_query[] = array(
-			'taxonomy' => 'pa_brand',
+			'taxonomy' => 'product_brand',
 			'field'    => 'slug',
 			'terms'    => array_map( 'sanitize_text_field', $_POST['filter_brand'] ),
 			'operator' => 'IN',
