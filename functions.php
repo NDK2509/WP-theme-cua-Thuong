@@ -27,6 +27,9 @@ if ( did_action( 'elementor/loaded' ) || defined( 'ELEMENTOR_VERSION' ) ) {
 	require get_template_directory() . '/inc/elementor-widgets.php';
 }
 
+// Include settings page.
+require get_template_directory() . '/inc/settings.php';
+
 /**
  * AJAX Product Search Handler
  */

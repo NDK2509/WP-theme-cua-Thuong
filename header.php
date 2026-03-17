@@ -103,11 +103,6 @@
 		</div>
 
 		<script>
-			// Make ajaxurl available to our frontend script
-			const censkills_ajax = {
-				ajaxurl: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>'
-			};
-
 			document.addEventListener('DOMContentLoaded', function() {
 				const searchToggle = document.querySelector('.search-toggle');
 				const searchForm   = document.querySelector('.header-search-form');

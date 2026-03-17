@@ -353,3 +353,200 @@ function censkills_filter_products_ajax() {
 	wp_die();
 }
 
+
+/**
+ * Virtual Try-On Shortcode
+ * Usage: [censkills_try_on]
+ */
+add_shortcode( 'censkills_try_on', 'censkills_try_on_shortcode' );
+
+function censkills_try_on_shortcode() {
+	if ( ! is_product() ) {
+		return '';
+	}
+
+	global $product;
+	if ( ! $product ) {
+		$product = wc_get_product( get_the_ID() );
+	}
+
+	$product_image = get_the_post_thumbnail_url( $product->get_id(), 'full' );
+	
+	ob_start();
+	?>
+	<div class="censkills-try-on-container" data-product-img="<?php echo esc_url( $product_image ); ?>">
+		<div class="try-on-header">
+			<h3 class="try-on-title">Virtual Try-On</h3>
+			<p class="try-on-desc">Upload your photo to see how it looks!</p>
+		</div>
+
+		<div class="try-on-upload-wrapper">
+			<label for="try-on-upload" class="try-on-upload-label">
+				<span class="upload-icon">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M12 16V8M12 8L9 11M12 8L15 11M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</span>
+				Chụp ảnh hoặc Tải ảnh lên
+			</label>
+			<input type="file" id="try-on-upload" accept="image/*" class="hidden">
+		</div>
+
+		<div id="try-on-preview-area" class="try-on-preview-area hidden">
+			<div class="preview-controls">
+				<button id="try-on-reset" class="try-on-btn-secondary">Chọn ảnh khác</button>
+				<button id="try-on-render" class="try-on-btn-primary">Thử ngay</button>
+			</div>
+			<div class="canvas-wrapper">
+				<canvas id="try-on-canvas"></canvas>
+			</div>
+		</div>
+
+		<div id="try-on-loading" class="try-on-loading hidden">
+			<div class="spinner"></div>
+			<p>Đang xử lý hình ảnh...</p>
+		</div>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * AJAX Handler: Virtual Try-On AI
+ */
+add_action( 'wp_ajax_censkills_try_on_ai', 'censkills_try_on_ai_handler' );
+add_action( 'wp_ajax_nopriv_censkills_try_on_ai', 'censkills_try_on_ai_handler' );
+
+function censkills_try_on_ai_handler() {
+	// Prevent any previous output from contaminating the JSON
+	while ( ob_get_level() > 0 ) {
+		ob_end_clean();
+	}
+	ob_start();
+	
+	// Ensure we don't output any warnings/errors to the response
+	ini_set( 'display_errors', 0 );
+	
+	try {
+	$api_key = get_option( 'censkills_google_ai_key' );
+	if ( empty( $api_key ) ) {
+		$api_key = defined( 'GOOGLE_AI_API_KEY' ) ? GOOGLE_AI_API_KEY : '';
+	}
+	
+	if ( empty( $api_key ) ) {
+		wp_send_json_error( array( 'message' => 'Google AI API Key is missing. Please set it in CenSkills Settings or define GOOGLE_AI_API_KEY in wp-config.php.' ) );
+	}
+
+	$user_image_data = isset( $_POST['user_image'] ) ? $_POST['user_image'] : '';
+	$product_image_url = isset( $_POST['product_image'] ) ? esc_url_raw( $_POST['product_image'] ) : '';
+
+	if ( empty( $user_image_data ) || empty( $product_image_url ) ) {
+		wp_send_json_error( array( 'message' => 'Missing image data.' ) );
+	}
+
+	// Prepare the prompt
+	$prompt = "You are a professional fashion AI. Take the user's photo and the product image provided. Generate a new image that realistically shows the person in the user's photo wearing/using the product. Maintain the person's identity, features, and posture. The result must be a clean, high-quality image.";
+
+	// Call Gemini API (using the model set in settings)
+	$model_name = get_option( 'censkills_google_ai_model', 'gemini-1.5-flash-latest' );
+	$endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" . $model_name . ":generateContent?key=" . $api_key;
+
+	// Extract base64 content
+	$user_image_base64 = preg_replace('#^data:image/[^;]+;base64,#', '', $user_image_data);
+	
+	// Get product image content
+	$product_image_response = wp_remote_get( $product_image_url );
+	if ( is_wp_error( $product_image_response ) ) {
+		wp_send_json_error( array( 'message' => 'Failed to fetch product image: ' . $product_image_response->get_error_message() ) );
+	}
+	
+	$product_image_body = wp_remote_retrieve_body( $product_image_response );
+	if ( empty( $product_image_body ) ) {
+		wp_send_json_error( array( 'message' => 'Product image content is empty.' ) );
+	}
+	
+	$product_image_base64 = base64_encode( $product_image_body );
+	$product_image_mime = wp_remote_retrieve_header( $product_image_response, 'content-type' );
+
+	$payload = array(
+		'contents' => array(
+			array(
+				'parts' => array(
+					array( 'text' => $prompt ),
+					array(
+						'inlineData' => array(
+							'mimeType' => 'image/png', 
+							'data'     => $user_image_base64
+						)
+					),
+					array(
+						'inlineData' => array(
+							'mimeType' => $product_image_mime ?: 'image/jpeg',
+							'data'     => $product_image_base64
+						)
+					)
+				)
+			)
+		),
+		'generationConfig' => array(
+			'responseModalities' => array('IMAGE'),
+		)
+	);
+
+	$response = wp_remote_post( $endpoint, array(
+		'headers' => array( 'Content-Type' => 'application/json' ),
+		'body'    => wp_json_encode( $payload ),
+		'timeout' => 45
+	) );
+
+	if ( is_wp_error( $response ) ) {
+		wp_send_json_error( array( 'message' => 'API Request Failed: ' . $response->get_error_message() ) );
+	}
+
+	$body = wp_remote_retrieve_body( $response );
+	$status_code = wp_remote_retrieve_response_code( $response );
+	
+	if ( $status_code !== 200 ) {
+		error_log( 'Gemini API Error (HTTP ' . $status_code . '): ' . $body );
+		$error_info = json_decode( $body, true );
+		$err_msg = isset( $error_info['error']['message'] ) ? $error_info['error']['message'] : 'AI API error. Status: ' . $status_code;
+		wp_send_json_error( array( 'message' => $err_msg . ' (Body: ' . substr($body, 0, 100) . ')' ) );
+	}
+
+	$result = json_decode( $body, true );
+	$found_image = false;
+
+	if ( isset( $result['candidates'][0]['content']['parts'] ) && is_array( $result['candidates'][0]['content']['parts'] ) ) {
+		foreach ( $result['candidates'][0]['content']['parts'] as $part ) {
+			// As per user's Python code: handle both snake_case and camelCase
+			$img_obj = null;
+			if ( isset( $part['inlineData'] ) ) {
+				$img_obj = $part['inlineData'];
+			} elseif ( isset( $part['inline_data'] ) ) {
+				$img_obj = $part['inline_data'];
+			}
+
+			if ( $img_obj && isset( $img_obj['data'] ) ) {
+				$mime = isset( $img_obj['mimeType'] ) ? $img_obj['mimeType'] : ( isset( $img_obj['mime_type'] ) ? $img_obj['mime_type'] : 'image/png' );
+				$output_image = 'data:' . $mime . ';base64,' . $img_obj['data'];
+				wp_send_json_success( array( 'image' => $output_image ) );
+				$found_image = true;
+				break;
+			}
+		}
+	}
+
+	if ( ! $found_image ) {
+		// If it returned text instead of an image, log it
+		$text_response = isset( $result['candidates'][0]['content']['parts'][0]['text'] ) ? $result['candidates'][0]['content']['parts'][0]['text'] : 'No text response';
+		error_log( 'Gemini API No Image Found. Response Body: ' . substr( $body, 0, 1000 ) );
+		wp_send_json_error( array( 'message' => 'Model returned text instead of an image. Response: ' . substr( $text_response, 0, 150 ) . '...' ) );
+	}
+	} catch ( Exception $e ) {
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
+		wp_send_json_error( array( 'message' => 'Exception: ' . $e->getMessage() ) );
+	}
+	wp_die();
+}

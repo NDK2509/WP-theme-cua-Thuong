@@ -21,8 +21,10 @@ function censkills_register_elementor_widgets( $widgets_manager ) {
 	require_once get_template_directory() . '/inc/elementor/widget-products.php';
 	require_once get_template_directory() . '/inc/elementor/widget-product-filter.php';
 	require_once get_template_directory() . '/inc/elementor/widget-front-page-grids.php';
+	require_once get_template_directory() . '/inc/elementor/widget-try-on.php';
 
 	$widgets_manager->register( new \CenSkills_Widget_Products() );
 	$widgets_manager->register( new \CenSkills_Widget_Product_Filter() );
 	$widgets_manager->register( new \CenSkills_Widget_Front_Page_Grids() );
+	$widgets_manager->register( new \CenSkills_Widget_Try_On() );
 }
