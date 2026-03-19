@@ -25,13 +25,43 @@ Text Domain: censkills-theme
 	--color-border: #e0e0e0;
 	--color-footer-bg: #000000;
 	--color-footer-text: #ffffff;
-	--color-footer-text-muted: #b0b0b0;
-	--color-accent-red: #d90429;
+	/* CenSkillSport Deep Dark Palette */
+	--color-bg-deep: #050505;
+	--color-bg-card: #141414;
+	--color-bg-light-gray: #f2f2f2; /* For product card contrast */
+	--color-text-main: #ffffff;
+	--color-text-muted: #a0a0a0;
+	--color-accent: #2f5acf; /* Original Primary Blue */
+	--color-accent-hover: #2446a6;
+	--color-accent-glow: rgba(47, 90, 207, 0.4);
 
-	/* Typography */
-	--font-family: 'Inter', sans-serif;
+	--color-discount: #ff3b30;
+	--color-border-subtle: rgba(255, 255, 255, 0.08);
 
-	/* Spacing & Layout */
+
+	/* Typography & Grid */
+	--font-family-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--spacing-unit: 8px;
+	--radius-lg: 16px;
+	--radius-md: 12px;
+	--radius-sm: 8px;
+	--radius-full: 9999px;
+
+	/* Shadows & Depth */
+	--shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.5);
+	--shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+	/* Transitions */
+	--transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-fast: all 0.15s ease-out;
+
+	/* Legacy variables to override */
+	--color-primary: var(--color-accent);
+	--color-text: var(--color-text-main);
+	--color-text-light: var(--color-text-muted);
+	--color-bg: var(--color-bg-deep);
+
+	/* Legacy variables that are still used */
 	--container-max-width: 1440px;
 	--container-padding: 2rem;
 	--spacing-xs: 0.5rem;
@@ -47,15 +77,36 @@ Text Domain: censkills-theme
 	--spacing-xxl: 5rem;
 	/* 80px */
 
-	/* Effects */
 	--border-radius-sm: 4px;
 	--border-radius-md: 8px;
 	--border-radius-lg: 16px;
 	--border-radius-pill: 9999px;
 	--box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 	--box-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-	--transition-fast: 0.2s ease;
 	--transition-normal: 0.3s ease;
+}
+
+/* Base Dark Overrides */
+body {
+	background-color: var(--color-bg-deep);
+	color: var(--color-text-main);
+	font-family: var(--font-family-main);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	scroll-behavior: smooth;
+}
+
+#page {
+	background-color: var(--color-bg-deep);
+}
+
+a {
+	color: var(--color-accent);
+	transition: var(--transition-fast);
+}
+
+a:hover {
+	color: var(--color-text-main);
 }
 
 /* ==========================================================================
@@ -347,71 +398,53 @@ button {
 	position: sticky;
 	top: 0;
 	z-index: 1000;
-	background-color: rgba(255, 255, 255, 0.95);
-	backdrop-filter: blur(5px);
-	border-bottom: 1px solid var(--color-border);
+	background-color: rgba(5, 5, 5, 0.8);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .header-inner {
-	height: 72px;
+	height: 64px;
 }
 
 .logo-text {
-	font-size: 1.5rem;
-	font-weight: 900;
-	letter-spacing: -1px;
-	color: var(--color-text);
-	text-transform: uppercase;
+	font-size: 1.25rem;
+	font-weight: 800;
+	letter-spacing: -0.01em;
+	color: var(--color-text-main);
+	text-transform: none;
 }
 
 .nav-menu a {
-	font-weight: 700;
-	text-transform: uppercase;
-	font-size: 0.9rem;
-	letter-spacing: 0.5px;
-	color: var(--color-text);
+	font-weight: 500;
+	text-transform: none;
+	font-size: 14px;
+	letter-spacing: 0;
+	color: var(--color-text-muted);
 	position: relative;
-	transition: font-weight var(--transition-fast);
+	transition: var(--transition-fast);
 	display: inline-block;
 }
 
 .nav-menu a:hover,
 .nav-menu li.current-menu-item>a,
 .nav-menu li.current_page_item>a {
-	color: var(--color-primary);
-	font-weight: 700;
-	/* Bold for hover and active state */
+	color: var(--color-text-main);
 }
 
 .nav-menu a::after {
-	content: '';
-	position: absolute;
-	width: 0;
-	height: 2px;
-	bottom: -4px;
-	left: 0;
-	background-color: var(--color-primary);
-	transition: width var(--transition-fast);
-}
-
-.nav-menu a:hover::after,
-.nav-menu li.current-menu-item>a::after,
-.nav-menu li.current_page_item>a::after {
-	width: 100%;
-	/* Persistent indicator for active state */
+	display: none; /* Cleaner, minimalist distraction */
 }
 
 .text-red {
-	color: var(--color-accent-red);
-}
-
-.text-red::after {
-	background-color: var(--color-accent-red);
+	color: var(--color-discount);
 }
 
 .text-red:hover {
-	color: var(--color-accent-red);
+	color: #ff5f57;
 }
+
 
 .icon-btn {
 	color: var(--color-text);
@@ -1448,6 +1481,69 @@ body.home main.site-main {
 	border-left: 4px solid var(--color-primary);
 	padding-left: calc(var(--spacing-md) - 4px);
 	/* Adjust padding to fit border */
+}
+
+/* Swatches (Premium Dark) */
+.custom-swatches .swatch-btn {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--color-border-subtle);
+	color: var(--color-text-muted);
+	padding: 10px 20px;
+	border-radius: var(--radius-sm);
+	font-weight: 500;
+	transition: var(--transition-fast);
+}
+
+.custom-swatches .swatch-btn:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.3);
+	color: var(--color-text-main);
+}
+
+.custom-swatches .swatch-btn.selected {
+	background: var(--color-accent);
+	border-color: var(--color-accent);
+	color: #fff;
+	box-shadow: 0 0 15px rgba(0, 122, 255, 0.4);
+}
+
+.reset_variations {
+	color: var(--color-text-muted);
+	font-size: 11px;
+	opacity: 0.6;
+	transition: var(--transition-fast);
+}
+
+.reset_variations:hover {
+	opacity: 1;
+	color: var(--color-accent);
+}
+
+/* Related Products (Dark) */
+.related.products, .upsells.products {
+	grid-column: 1 / -1;
+	margin-top: calc(var(--spacing-unit) * 10);
+}
+
+.related.products h2, .upsells.products h2 {
+	font-size: 24px;
+	font-weight: 800;
+	margin-bottom: 32px;
+	color: var(--color-text-main);
+}
+
+.products .product {
+	background: var(--color-bg-card);
+	border-radius: var(--radius-md);
+	padding: 16px;
+	transition: var(--transition-smooth);
+	border: 1px solid transparent;
+}
+
+.products .product:hover {
+	transform: translateY(-8px);
+	border-color: var(--color-border-subtle);
+	box-shadow: var(--shadow-premium);
 }
 
 /* My Account Content Area */
@@ -2784,3 +2880,531 @@ body.woocommerce-checkout .woocommerce {
 		padding: 36px 0 28px;
 	}
 }
+
+/* ==========================================================================
+   Premium Single Product (Dark Theme High-End)
+   ========================================================================== */
+
+.single-product .woocommerce-breadcrumb {
+	margin-top: calc(var(--spacing-unit) * 4);
+	margin-bottom: calc(var(--spacing-unit) * 3);
+	font-size: 13px;
+	color: var(--color-text-muted);
+}
+
+.woocommerce #content div.product div.summary, 
+.woocommerce div.product div.summary, 
+.woocommerce-page #content div.product div.summary, 
+.woocommerce-page div.product div.summary {
+	width: auto !important; /* Remove legacy widths to fit the grid */
+	float: none !important;
+}
+
+.single-product .woocommerce-breadcrumb a {
+	color: var(--color-text-muted);
+}
+
+.single-product .woocommerce-breadcrumb a:hover {
+	color: var(--color-accent);
+}
+
+/* --- Layout Grid --- */
+.single-product div.product {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 0 48px;
+	align-items: start;
+	max-width: var(--container-max-width, 1600px);
+	margin: 0 auto;
+	padding: 0 var(--container-padding);
+}
+
+
+
+@media (max-width: 991px) {
+	.single-product div.product {
+		grid-template-columns: 100%;
+		gap: 32px;
+		padding: 0 20px;
+	}
+}
+
+/* Gallery - Card Styling */
+.single-product div.product > .woocommerce-product-gallery {
+	grid-column: 1 / 2;
+}
+
+.censkills-product-gallery {
+	display: flex;
+	gap: 16px;
+}
+
+/* Vertical thumbnail strip */
+.censkills-gallery-thumbs {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 80px;
+	flex-shrink: 0;
+	max-height: 600px;
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.censkills-gallery-thumbs::-webkit-scrollbar { display: none; }
+
+.censkills-gallery-thumb {
+	width: 80px;
+	height: 100px;
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+	cursor: pointer;
+	border: 2px solid transparent;
+	flex-shrink: 0;
+	background: #f5f5f5;
+	transition: var(--transition-fast);
+}
+
+.censkills-gallery-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.censkills-gallery-thumb.is-active {
+	border-color: var(--color-accent);
+}
+
+.censkills-gallery-main {
+	flex: 1;
+	background: #ffffff; /* Contrast card for dark UI */
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-premium);
+	padding: 24px;
+	position: relative;
+	transition: var(--transition-smooth);
+	overflow: hidden;
+}
+
+.censkills-gallery-slide {
+	display: none;
+}
+
+.censkills-gallery-slide.is-active {
+	display: block;
+}
+
+.censkills-gallery-arrow {
+	position: absolute;
+	bottom: 24px;
+	background: rgba(255,255,255,0.9);
+	border: none;
+	border-radius: var(--radius-full);
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	z-index: 5;
+	transition: var(--transition-fast);
+}
+
+.censkills-gallery-arrow:hover { background: #fff; transform: scale(1.1); }
+.censkills-gallery-arrow.prev { right: 74px; }
+.censkills-gallery-arrow.next { right: 24px; }
+
+@media (max-width: 767px) {
+	.censkills-product-gallery { flex-direction: column; }
+	.censkills-gallery-thumbs { display: none; }
+}
+
+/* Summary - Glassmorphism Card */
+
+.single-product div.product > .summary.entry-summary {
+	grid-column: 2 / 3;
+	background: var(--color-bg-glass);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid var(--color-border-subtle);
+	border-radius: var(--radius-lg);
+	padding: 32px;
+	position: sticky;
+	top: 100px;
+}
+
+@media (max-width: 991px) {
+	.single-product div.product > .summary.entry-summary {
+		grid-column: 1 / 2;
+		position: static;
+		padding: 24px;
+	}
+}
+
+/* --- Summary Details --- */
+.premium-rating {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 12px;
+}
+
+.premium-rating.clickable {
+	cursor: pointer;
+}
+
+.premium-rating .stars {
+	color: var(--color-accent);
+	font-size: 14px;
+}
+
+.premium-rating .count {
+	color: var(--color-text-muted);
+	font-size: 12px;
+}
+
+.summary.entry-summary h1.product_title {
+	font-size: 32px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	margin: 0 0 16px 0;
+	line-height: 1.1;
+	color: #fff;
+}
+
+.summary.entry-summary .price {
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--color-accent); /* Neon accent for price */
+	margin-bottom: 24px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.summary.entry-summary .price del {
+	font-size: 18px;
+	color: var(--color-text-muted);
+	font-weight: 400;
+	opacity: 0.6;
+}
+
+.premium-discount-badge {
+	background: var(--color-discount);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: var(--radius-sm);
+	margin-left: 8px;
+}
+
+.premium-selling-points {
+	list-style: none;
+	padding: 0;
+	margin: 24px 0;
+	border-top: 1px solid var(--color-border-subtle);
+	padding-top: 24px;
+}
+
+.premium-selling-points li {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	color: var(--color-text-muted);
+	margin-bottom: 8px;
+}
+
+.premium-selling-points li svg {
+	color: var(--color-accent);
+}
+
+/* --- Add to Cart & CTA --- */
+.summary.entry-summary form.cart {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-top: 24px;
+	align-items: stretch;
+}
+
+.summary.entry-summary .quantity {
+	display: flex;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--color-border-subtle);
+	border-radius: var(--radius-sm);
+	height: 52px;
+	padding: 0;
+	width: 100%;
+}
+
+.summary.entry-summary .quantity input {
+	flex: 1;
+	height: 100%;
+	background: transparent;
+	border: none;
+	color: #fff;
+	text-align: center;
+	font-size: 16px;
+	font-weight: 700;
+	padding: 0;
+	-moz-appearance: textfield;
+	appearance: none;
+}
+
+
+.summary.entry-summary .quantity input::-webkit-outer-spin-button,
+.summary.entry-summary .quantity input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.qty-minus,
+.qty-plus {
+	width: 38px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--color-text-muted);
+	cursor: pointer;
+	font-size: 18px;
+	transition: var(--transition-fast);
+	user-select: none;
+}
+
+.qty-minus:hover,
+.qty-plus:hover {
+	color: var(--color-accent);
+}
+
+/* Hide ShopEngine injections */
+.shopengine-wishlist,
+.shopengine-comparison {
+	display: none !important;
+}
+
+.summary.entry-summary button.single_add_to_cart_button {
+	height: 52px;
+	background: var(--color-accent);
+	color: #fff;
+	border: none;
+	border-radius: var(--radius-sm);
+	font-size: 14px;
+	font-weight: 800;
+	text-transform: uppercase;
+	transition: var(--transition-smooth);
+	letter-spacing: 0.05em;
+	width: 100%;
+}
+
+.summary.entry-summary button.single_add_to_cart_button:hover {
+	transform: translateY(-1px);
+	filter: brightness(1.1);
+	box-shadow: 0 6px 20px var(--color-accent-glow);
+}
+
+/* Buy Now Button */
+.buy-now-button {
+	height: 52px;
+	background: #1a1a1a;
+	color: #fff;
+	border: 1px solid var(--color-border-subtle);
+	border-radius: var(--radius-sm);
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	width: 100%;
+	transition: var(--transition-smooth);
+}
+
+
+
+.buy-now-button:hover {
+	background: var(--color-accent);
+	color: #fff;
+}
+
+
+/* Trust Row (Horizontal) */
+.premium-trust-row {
+	margin-top: 32px;
+	display: flex;
+	justify-content: space-between;
+	border-top: 1px solid var(--color-border-subtle);
+	padding-top: 24px;
+	gap: 10px;
+}
+
+.trust-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 6px;
+	font-size: 11px;
+	color: var(--color-text-muted);
+	flex: 1;
+}
+
+.trust-item svg {
+	color: var(--color-text-muted);
+	opacity: 0.7;
+}
+
+/* Swatches (Refined Glow) */
+.custom-swatches .swatch-btn {
+	background: var(--color-bg-card);
+	border: 1px solid var(--color-border-subtle);
+	color: var(--color-text-muted);
+}
+
+.custom-swatches .swatch-btn.selected {
+	background: #000;
+	border-color: var(--color-accent);
+	color: var(--color-text-main);
+	box-shadow: 0 0 10px var(--color-accent-glow);
+	outline: 1px solid var(--color-accent);
+}
+
+/* --- Mobile Sticky Bar --- */
+@media (max-width: 767px) {
+	.single-product .summary.entry-summary form.cart {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: rgba(18, 18, 18, 0.95);
+		backdrop-filter: blur(10px);
+		padding: 12px 20px env(safe-area-inset-bottom);
+		z-index: 9999;
+		margin: 0;
+		border-top: 1px solid var(--color-border-subtle);
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 10px;
+	}
+
+	.single-product .summary.entry-summary form.cart .quantity,
+	.single-product .summary.entry-summary form.cart .buy-now-button,
+	.single-product .summary.entry-summary form.cart .product-quick-actions {
+		display: none; /* Hide non-essentials in sticky bar */
+	}
+
+	.single-product .summary.entry-summary form.cart button.single_add_to_cart_button {
+		width: 100%;
+		margin: 0;
+	}
+	
+	.single-product div.product {
+		padding-bottom: 100px; /* Spacer for sticky bar */
+	}
+}
+
+
+/* Tabs Redesign (CenSkillSport Dark) */
+.woocommerce-tabs {
+	margin-top: 64px;
+	border-top: 1px solid var(--color-border-subtle);
+	padding-top: 40px;
+}
+
+.woocommerce-tabs ul.tabs {
+	display: flex;
+	list-style: none;
+	padding: 0;
+	margin: 0 0 32px 0;
+	gap: 32px;
+	border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.woocommerce-tabs ul.tabs li {
+	margin: 0;
+}
+
+.woocommerce-tabs ul.tabs li a {
+	display: block;
+	padding: 0 0 16px 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--color-text-muted);
+	position: relative;
+	transition: var(--transition-fast);
+}
+
+.woocommerce-tabs ul.tabs li.active a {
+	color: var(--color-accent);
+}
+
+.woocommerce-tabs ul.tabs li.active a::after {
+	content: '';
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: var(--color-accent);
+	box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+.woocommerce-Tabs-panel h2 {
+	display: none;
+}
+
+.woocommerce-Tabs-panel p,
+.woocommerce-Tabs-panel {
+	line-height: 1.8;
+	color: var(--color-text-muted);
+	font-size: 15px;
+}
+
+/* --- Product Description Below Grid --- */
+.censkills-product-description {
+	margin-top: 64px;
+	padding-top: 48px;
+	border-top: 1px solid var(--color-border-subtle);
+	max-width: var(--container-max-width, 1440px);
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.censkills-description-title {
+	font-size: 24px;
+	font-weight: 800;
+	margin-bottom: 24px;
+	color: #fff;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.censkills-description-content {
+	line-height: 1.8;
+	color: var(--color-text-muted);
+	font-size: 16px;
+}
+
+.censkills-description-content p {
+	margin-bottom: 20px;
+}
+
+.censkills-description-content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius-md);
+	margin: 24px 0;
+	border: 1px solid var(--color-border-subtle);
+}
+
+@media (max-width: 991px) {
+	.censkills-product-description {
+		margin-top: 48px;
+		padding-top: 32px;
+	}
+}
+
+

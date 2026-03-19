@@ -24,7 +24,7 @@ if ( ! function_exists( 'censkills_woocommerce_setup' ) ) :
 		);
 		add_theme_support( 'wc-product-gallery-zoom' );
 		add_theme_support( 'wc-product-gallery-lightbox' );
-		add_theme_support( 'wc-product-gallery-slider' );
+		// remove slider to allow grid layout
 	}
 endif;
 add_action( 'after_setup_theme', 'censkills_woocommerce_setup' );
@@ -127,6 +127,153 @@ function censkills_woocommerce_loop_setup() {
 function censkills_woocommerce_loop_price() {
 	global $product;
 	echo '<div class="censkills-product-price">' . $product->get_price_html() . '</div>';
+}
+
+/**
+ * Custom Single Product Additions (Coolmate UI)
+ */
+/**
+ * Premium Single Product Hooks (Tennis Racket / High-End UI)
+ */
+
+// Add Ratings above title (Clickable)
+add_action('woocommerce_single_product_summary', 'censkills_premium_product_rating', 3);
+function censkills_premium_product_rating() {
+    global $product;
+    $rating_count = $product->get_rating_count();
+    $average      = $product->get_average_rating();
+    if ( $rating_count > 0 ) {
+        echo '<div class="premium-rating clickable" onclick="document.querySelector(\'#reviews\').scrollIntoView({behavior:\'smooth\'})">
+            <span class="stars">' . wc_get_rating_html($average, $rating_count) . '</span>
+            <span class="count">(' . $rating_count . ' reviews)</span>
+        </div>';
+    }
+}
+
+// Add Selling Points below price
+add_action('woocommerce_single_product_summary', 'censkills_premium_selling_points', 15);
+function censkills_premium_selling_points() {
+    echo '<ul class="premium-selling-points">
+        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> High-Performance Control</li>
+        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Ultra-Lightweight Carbon Fiber</li>
+    </ul>';
+}
+
+// Discount Badge logic for summary
+add_action('woocommerce_single_product_summary', 'censkills_premium_discount_badge', 12);
+function censkills_premium_discount_badge() {
+    global $product;
+    if ( $product->is_on_sale() ) {
+        if ($product->is_type('variable')) {
+            $percentages = array();
+            $prices = $product->get_variation_prices();
+            foreach ($prices['regular_price'] as $key => $regular_price) {
+                $sale_price = $prices['sale_price'][$key];
+                if ($sale_price < $regular_price) {
+                    $percentages[] = round(100 - ($sale_price / $regular_price * 100));
+                }
+            }
+            $percentage = max($percentages);
+        } else {
+            $regular_price = $product->get_regular_price();
+            $sale_price = $product->get_sale_price();
+            $percentage = round(100 - ($sale_price / $regular_price * 100));
+        }
+        echo '<span class="premium-discount-badge">-' . $percentage . '% OFF</span>';
+    }
+}
+
+// Add Quick Actions (Buy Now) next to Add to Cart
+add_action('woocommerce_after_add_to_cart_button', 'censkills_premium_extra_ctas');
+function censkills_premium_extra_ctas() {
+    echo '<button type="button" class="button buy-now-button">Buy Now</button>';
+}
+
+
+// Updated Trust Signals (Horizontal Row)
+add_action('woocommerce_after_add_to_cart_form', 'censkills_premium_trust_signals', 30);
+function censkills_premium_trust_signals() {
+    echo '<div class="premium-trust-row">
+        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polyline points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Fast Delivery</div>
+        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> 60-Day Returns</div>
+        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secure Pay</div>
+    </div>';
+}
+
+
+add_action('wp_footer', 'censkills_variation_swatches', 99);
+
+function censkills_variation_swatches() {
+    if ( ! function_exists('is_product') || ! is_product() ) return;
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ── Variation Swatches ──────────────────────────────────────────────
+        const selects = document.querySelectorAll('.variations select');
+        selects.forEach(select => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-swatches';
+
+            Array.from(select.options).forEach(option => {
+                if(option.value === '') return;
+                const btn = document.createElement('div');
+                btn.className = 'swatch-btn';
+                btn.textContent = option.text;
+                btn.dataset.value = option.value;
+                if (select.value === option.value) btn.classList.add('selected');
+
+                btn.addEventListener('click', function() {
+                    wrapper.querySelectorAll('.swatch-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    select.value = option.value;
+                    if(typeof jQuery !== 'undefined') jQuery(select).trigger('change');
+                });
+                wrapper.appendChild(btn);
+            });
+
+            select.parentNode.appendChild(wrapper);
+        });
+
+        if(typeof jQuery !== 'undefined') {
+            jQuery('.variations_form').on('reset_data', function() {
+                document.querySelectorAll('.swatch-btn.selected').forEach(b => b.classList.remove('selected'));
+            });
+        }
+
+        // ── Quantity +/- Buttons ────────────────────────────────────────────
+        document.querySelectorAll('.summary .quantity').forEach(qtyWrap => {
+            const input = qtyWrap.querySelector('input.qty');
+            if (!input) return;
+
+            // Create minus btn
+            const minus = document.createElement('span');
+            minus.className = 'qty-minus';
+            minus.innerHTML = '&minus;';
+            minus.addEventListener('click', () => {
+                const min = parseInt(input.min) || 1;
+                const val = parseInt(input.value) || min;
+                if (val > min) { input.value = val - 1; input.dispatchEvent(new Event('change')); }
+            });
+
+            // Create plus btn
+            const plus = document.createElement('span');
+            plus.className = 'qty-plus';
+            plus.innerHTML = '&plus;';
+            plus.addEventListener('click', () => {
+                const max = parseInt(input.max) || Infinity;
+                const val = parseInt(input.value) || 1;
+                if (val < max) { input.value = val + 1; input.dispatchEvent(new Event('change')); }
+            });
+
+            qtyWrap.prepend(minus);
+            qtyWrap.appendChild(plus);
+        });
+    });
+    </script>
+    <style>
+    .variations select { display: none !important; }
+    </style>
+    <?php
 }
 
 /**
