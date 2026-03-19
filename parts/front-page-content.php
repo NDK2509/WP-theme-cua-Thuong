@@ -1,4 +1,4 @@
-	<div class="container pb-xxl">
+	<div class="container pb-lg">
 
 		<!-- Categories Slider -->
 		<section class="section">
