@@ -38,7 +38,15 @@
 			<!-- Logo -->
 			<div class="site-branding">
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="site-logo-link">
-					<span class="logo-text">CenSkills</span>
+					<?php if ( has_custom_logo() ) : ?>
+						<?php
+						$custom_logo_id = get_theme_mod( 'custom_logo' );
+						$logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
+						?>
+						<img src="<?php echo esc_url( $logo[0] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="site-logo-img" style="max-height: 70px; width: auto;">
+					<?php else : ?>
+						<span class="logo-text"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+					<?php endif; ?>
 				</a>
 			</div>
 			
@@ -228,7 +236,15 @@
 		<!-- Drawer Header -->
 		<div class="drawer-header">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="drawer-logo">
-				<span class="logo-text">CenSkills</span>
+				<?php if ( has_custom_logo() ) : ?>
+					<?php
+					$custom_logo_id = get_theme_mod( 'custom_logo' );
+					$logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
+					?>
+					<img src="<?php echo esc_url( $logo[0] ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" class="site-logo-img" style="max-height: 70px; width: auto;">
+				<?php else : ?>
+					<span class="logo-text"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+				<?php endif; ?>
 			</a>
 			<button id="drawer-close" class="drawer-close-btn" aria-label="Đóng menu">
 				<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
