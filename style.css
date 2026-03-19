@@ -1566,7 +1566,6 @@ body.home main.site-main {
 .censkills-filter-form {
 	display: flex;
 	flex-direction: column;
-	gap: var(--spacing-lg);
 }
 
 .filter-section {
@@ -1576,14 +1575,49 @@ body.home main.site-main {
 .filter-title {
 	font-size: 1.1rem;
 	font-weight: 600;
-	margin-bottom: var(--spacing-md);
+	margin-bottom: var(--spacing-sm);
 	color: var(--color-text);
+	cursor: pointer;
+	user-select: none;
+	list-style: none; /* Provide custom marker if needed, or hide default */
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
+
+.filter-title::-webkit-details-marker {
+	display: none;
+}
+
+.filter-title::after {
+	content: '';
+	display: block;
+	width: 8px;
+	height: 8px;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform var(--transition-fast);
+	margin-right: 4px;
+	margin-top: -4px;
+}
+
+details[open] .filter-title::after {
+	transform: rotate(-135deg);
+	margin-top: 4px;
+}
+
 
 .filter-options {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
+}
+
+.filter-options.brand-options {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px 16px;
 }
 
 /* Custom Checkbox / Radio styling */

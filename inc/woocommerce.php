@@ -149,11 +149,7 @@ function censkills_product_filter_shortcode( $atts ) {
 		'hide_empty' => false,
 	) );
 
-	$sizes = get_terms( array(
-		'taxonomy'   => 'pa_size',
-		'hide_empty' => false,
-	) );
-	
+
 	ob_start();
 	?>
 	<div class="censkills-shop-sidebar w-full">
@@ -161,9 +157,9 @@ function censkills_product_filter_shortcode( $atts ) {
 		<form id="censkills-product-filter" class="censkills-filter-form">
 			
 			<!-- Brands -->
-			<div class="filter-section">
-				<h3 class="filter-title">Thương hiệu</h3>
-				<div class="filter-options">
+			<details class="filter-section">
+				<summary class="filter-title">Thương hiệu</summary>
+				<div class="filter-options brand-options">
 					<?php if ( ! is_wp_error( $brands ) && ! empty( $brands ) ) : ?>
 						<?php foreach ( $brands as $brand ) : ?>
 							<label class="filter-checkbox">
@@ -176,11 +172,11 @@ function censkills_product_filter_shortcode( $atts ) {
 						<p class="text-sm text-gray-500">Chưa có thương hiệu.</p>
 					<?php endif; ?>
 				</div>
-			</div>
+			</details>
 
 			<!-- Price -->
-			<div class="filter-section">
-				<h3 class="filter-title">Giá</h3>
+			<details class="filter-section">
+				<summary class="filter-title">Giá</summary>
 				<div class="filter-options">
 					<label class="filter-radio">
 						<input type="radio" name="filter_price" value="" checked>
@@ -208,25 +204,9 @@ function censkills_product_filter_shortcode( $atts ) {
 						Trên 2.000.000đ
 					</label>
 				</div>
-			</div>
+			</details>
 
-			<!-- Sizes -->
-			<div class="filter-section">
-				<h3 class="filter-title">Kích thước</h3>
-				<div class="filter-size-grid">
-					<?php if ( ! is_wp_error( $sizes ) && ! empty( $sizes ) ) : ?>
-						<?php foreach ( $sizes as $size ) : ?>
-							<label class="filter-size-btn">
-								<input type="checkbox" name="filter_size[]" value="<?php echo esc_attr( $size->slug ); ?>" class="hidden-checkbox">
-								<span class="size-label"><?php echo esc_html( $size->name ); ?></span>
-							</label>
-						<?php endforeach; ?>
-					<?php else: ?>
-						<p class="text-sm text-gray-500">Chưa có kích thước.</p>
-					<?php endif; ?>
-				</div>
-			</div>
-			
+
 			<input type="hidden" name="action" value="censkills_filter_products">
 			<?php if ( ! empty( $atts['category'] ) ) : ?>
 				<input type="hidden" name="product_cat" value="<?php echo esc_attr( $atts['category'] ); ?>">
@@ -269,16 +249,6 @@ function censkills_filter_products_ajax() {
 			'taxonomy' => 'product_brand',
 			'field'    => 'slug',
 			'terms'    => array_map( 'sanitize_text_field', $_POST['filter_brand'] ),
-			'operator' => 'IN',
-		);
-	}
-
-	// Size
-	if ( ! empty( $_POST['filter_size'] ) && is_array( $_POST['filter_size'] ) ) {
-		$tax_query[] = array(
-			'taxonomy' => 'pa_size',
-			'field'    => 'slug',
-			'terms'    => array_map( 'sanitize_text_field', $_POST['filter_size'] ),
 			'operator' => 'IN',
 		);
 	}
