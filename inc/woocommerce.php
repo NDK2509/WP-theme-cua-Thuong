@@ -89,16 +89,31 @@ function censkills_custom_woocommerce_loop_hooks() {
 	add_action( 'woocommerce_before_shop_loop_item_title', 'censkills_woocommerce_loop_thumbnail', 10 );
 	add_action( 'woocommerce_shop_loop_item_title', 'censkills_woocommerce_loop_setup', 10 );
 	add_action( 'woocommerce_after_shop_loop_item_title', 'censkills_woocommerce_loop_price', 10 );
+
+	// Remove duplicate brand from WooCommerce Brands plugin (we have custom display in meta.php)
+	if ( isset( $GLOBALS['WC_Brands'] ) ) {
+		remove_action( 'woocommerce_product_meta_end', array( $GLOBALS['WC_Brands'], 'show_brand' ) );
+	}
 }
 
 function censkills_woocommerce_loop_link_open() {
 	global $product;
+	if ( ! is_a( $product, 'WC_Product' ) ) {
+		$product = wc_get_product( get_the_ID() );
+	}
+	if ( ! $product ) return;
+
 	$link = apply_filters( 'woocommerce_loop_product_link', get_the_permalink(), $product );
 	echo '<a href="' . esc_url( $link ) . '" class="woocommerce-LoopProduct-link woocommerce-loop-product__link censkills-product">';
 }
 
 function censkills_woocommerce_loop_thumbnail() {
 	global $product;
+	if ( ! is_a( $product, 'WC_Product' ) ) {
+		$product = wc_get_product( get_the_ID() );
+	}
+	if ( ! $product ) return;
+
 	echo '<div class="censkills-product-image-wrap">';
 	
 	// Badge
@@ -126,6 +141,11 @@ function censkills_woocommerce_loop_setup() {
 
 function censkills_woocommerce_loop_price() {
 	global $product;
+	if ( ! is_a( $product, 'WC_Product' ) ) {
+		$product = wc_get_product( get_the_ID() );
+	}
+	if ( ! $product ) return;
+
 	echo '<div class="censkills-product-price">' . $product->get_price_html() . '</div>';
 }
 
@@ -187,17 +207,6 @@ function censkills_premium_discount_badge() {
 add_action('woocommerce_after_add_to_cart_button', 'censkills_premium_extra_ctas');
 function censkills_premium_extra_ctas() {
     echo '<button type="button" class="button buy-now-button">Buy Now</button>';
-}
-
-
-// Updated Trust Signals (Horizontal Row)
-add_action('woocommerce_after_add_to_cart_form', 'censkills_premium_trust_signals', 30);
-function censkills_premium_trust_signals() {
-    echo '<div class="premium-trust-row">
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polyline points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Fast Delivery</div>
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> 60-Day Returns</div>
-        <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secure Pay</div>
-    </div>';
 }
 
 
@@ -467,4 +476,3 @@ function censkills_filter_products_ajax() {
 	wp_send_json_success( array( 'html' => $html ) );
 	wp_die();
 }
-
