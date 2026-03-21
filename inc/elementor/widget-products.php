@@ -60,12 +60,25 @@ class CenSkills_Widget_Products extends \Elementor\Widget_Base {
 			]
 		);
 
+		$this->add_control(
+			'columns',
+			[
+				'label'   => 'Columns (Products in a row)',
+				'type'    => \Elementor\Controls_Manager::NUMBER,
+				'min'     => 1,
+				'max'     => 6,
+				'step'    => 1,
+				'default' => 4,
+			]
+		);
+
 		$this->end_controls_section();
 	}
 
 	protected function render() {
 		$settings = $this->get_settings_for_display();
 		$category = sanitize_text_field( $settings['category'] );
-		echo do_shortcode( '[censkills_products category="' . esc_attr( $category ) . '"]' );
+		$columns  = absint( $settings['columns'] );
+		echo do_shortcode( '[censkills_products category="' . esc_attr( $category ) . '" columns="' . esc_attr( $columns ) . '"]' );
 	}
 }

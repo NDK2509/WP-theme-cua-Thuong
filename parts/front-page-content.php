@@ -159,16 +159,29 @@
 						$image_url = get_the_post_thumbnail_url( get_the_ID(), 'full' ) ?: wc_placeholder_img_src();
 				?>
 				<div class="censkills-product">
-					<a href="<?php echo esc_url( get_permalink() ); ?>" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
-						<div class="censkills-product-image-wrap">
+					<div class="censkills-product-image-wrap">
+						<a href="<?php echo esc_url( get_permalink() ); ?>" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
 							<?php if ( $product->is_on_sale() ) : ?>
 								<span class="censkills-badge sale-badge">SALE</span>
 							<?php else: ?>
 								<span class="censkills-badge new-badge">NEW</span>
 							<?php endif; ?>
 							<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" class="censkills-product-img">
-						</div>
-					</a>
+						</a>
+						<?php if ( $product->is_type( 'variable' ) ) : ?>
+							<a href="<?php echo esc_url( get_permalink() ); ?>" class="censkills-atc-overlay button"><?php esc_html_e( 'Chọn sản phẩm', 'censkills-theme' ); ?></a>
+						<?php else : ?>
+							<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>"
+								class="censkills-atc-overlay button ajax_add_to_cart add_to_cart_button"
+								data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"
+								data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"
+								data-quantity="1"
+								aria-label="<?php echo esc_attr( sprintf( __( 'Add "%s" to your cart', 'woocommerce' ), $product->get_name() ) ); ?>"
+								rel="nofollow">
+								Thêm vào giỏ
+							</a>
+						<?php endif; ?>
+					</div>
 					<div class="censkills-product-swatches">
 						<!-- Note: These are currently hardcoded UI swatches -->
 						<span class="swatch bg-black"></span>
@@ -188,16 +201,19 @@
 					for ($i = 1; $i <= 8; $i++) : 
 				?>
 				<div class="censkills-product">
-					<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
-						<div class="censkills-product-image-wrap">
+					<div class="censkills-product-image-wrap">
+						<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
 							<?php if ($i % 3 === 0) : ?>
 								<span class="censkills-badge sale-badge">SALE</span>
 							<?php else: ?>
 								<span class="censkills-badge new-badge">NEW</span>
 							<?php endif; ?>
 							<img src="https://placehold.co/400x500/e2e2e4/333333?text=Product+<?php echo $i; ?>" alt="Product Name" class="censkills-product-img">
+						</a>
+						<div class="hover-add-to-cart">
+							<a href="#" class="button add_to_cart_button">Add to Cart</a>
 						</div>
-					</a>
+					</div>
 					<div class="censkills-product-swatches">
 						<span class="swatch bg-black"></span>
 						<span class="swatch bg-gray-light"></span>

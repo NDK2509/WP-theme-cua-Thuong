@@ -36,6 +36,7 @@ function censkills_products_shortcode( $atts ) {
 	$atts = shortcode_atts(
 		array(
 			'category' => '',
+			'columns'  => '4',
 		),
 		$atts,
 		'censkills_products'
@@ -62,7 +63,7 @@ function censkills_products_shortcode( $atts ) {
 
 	if ( $query->have_posts() ) {
 		// Products exist, use the default WooCommerce shortcode
-		return do_shortcode( '[products category="' . esc_attr( $atts['category'] ) . '"]' );
+		return do_shortcode( '[products category="' . esc_attr( $atts['category'] ) . '" columns="' . esc_attr( $atts['columns'] ) . '"]' );
 	} else {
 		// No products found
 		return '<p class="censkills-no-products" style="text-align: center; padding: 2em; font-size: 1.2em;">No product found!</p>';
@@ -77,6 +78,7 @@ add_action( 'init', 'censkills_custom_woocommerce_loop_hooks' );
 function censkills_custom_woocommerce_loop_hooks() {
 	// Remove standard WooCommerce hooks
 	remove_action( 'woocommerce_before_shop_loop_item', 'woocommerce_template_loop_product_link_open', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_product_link_close', 5 );
 	remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10 );
 	remove_action( 'woocommerce_before_shop_loop_item_title', 'woocommerce_template_loop_product_thumbnail', 10 );
 	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
@@ -85,7 +87,6 @@ function censkills_custom_woocommerce_loop_hooks() {
 	remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
 
 	// Add our custom hooks
-	add_action( 'woocommerce_before_shop_loop_item', 'censkills_woocommerce_loop_link_open', 10 );
 	add_action( 'woocommerce_before_shop_loop_item_title', 'censkills_woocommerce_loop_thumbnail', 10 );
 	add_action( 'woocommerce_shop_loop_item_title', 'censkills_woocommerce_loop_setup', 10 );
 	add_action( 'woocommerce_after_shop_loop_item_title', 'censkills_woocommerce_loop_price', 10 );
@@ -96,17 +97,6 @@ function censkills_custom_woocommerce_loop_hooks() {
 	}
 }
 
-function censkills_woocommerce_loop_link_open() {
-	global $product;
-	if ( ! is_a( $product, 'WC_Product' ) ) {
-		$product = wc_get_product( get_the_ID() );
-	}
-	if ( ! $product ) return;
-
-	$link = apply_filters( 'woocommerce_loop_product_link', get_the_permalink(), $product );
-	echo '<a href="' . esc_url( $link ) . '" class="woocommerce-LoopProduct-link woocommerce-loop-product__link censkills-product">';
-}
-
 function censkills_woocommerce_loop_thumbnail() {
 	global $product;
 	if ( ! is_a( $product, 'WC_Product' ) ) {
@@ -114,7 +104,10 @@ function censkills_woocommerce_loop_thumbnail() {
 	}
 	if ( ! $product ) return;
 
+	$link = apply_filters( 'woocommerce_loop_product_link', get_the_permalink(), $product );
+	
 	echo '<div class="censkills-product-image-wrap">';
+	echo '<a href="' . esc_url( $link ) . '" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">';
 	
 	// Badge
 	if ( $product->is_on_sale() ) {
@@ -125,6 +118,25 @@ function censkills_woocommerce_loop_thumbnail() {
 	}
 
 	echo $product->get_image( 'woocommerce_thumbnail', array( 'class' => 'censkills-product-img' ) );
+	echo '</a>'; // close link wrapping image
+
+	// Add to Cart overlay button
+	if ( $product->is_type( 'variable' ) ) {
+		// Variable products: link to product page for variation selection
+		echo '<a href="' . esc_url( $link ) . '" class="censkills-atc-overlay button">' . esc_html__( 'Chọn sản phẩm', 'censkills-theme' ) . '</a>';
+	} else {
+		echo '<a href="' . esc_url( $product->add_to_cart_url() ) . '"
+			class="censkills-atc-overlay button ajax_add_to_cart add_to_cart_button"
+			data-product_id="' . esc_attr( $product->get_id() ) . '"
+			data-product_sku="' . esc_attr( $product->get_sku() ) . '"
+			data-quantity="1"
+			aria-label="' . esc_attr( sprintf( __( 'Add "%s" to your cart', 'woocommerce' ), $product->get_name() ) ) . '"
+			rel="nofollow">
+			Thêm vào giỏ
+		</a>';
+	}
+
+
 	echo '</div>'; // close wrap
 
 	// Mockup Color Swatches
@@ -136,7 +148,7 @@ function censkills_woocommerce_loop_thumbnail() {
 }
 
 function censkills_woocommerce_loop_setup() {
-	echo '<h2 class="censkills-product-title">' . get_the_title() . '</h2>';
+	echo '<h2 class="censkills-product-title"><a href="' . esc_url( get_permalink() ) . '">' . esc_html( get_the_title() ) . '</a></h2>';
 }
 
 function censkills_woocommerce_loop_price() {

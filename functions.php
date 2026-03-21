@@ -162,3 +162,43 @@ function censkills_blog_load_more() {
 }
 add_action( 'wp_ajax_censkills_blog_load_more',        'censkills_blog_load_more' );
 add_action( 'wp_ajax_nopriv_censkills_blog_load_more', 'censkills_blog_load_more' );
+
+/**
+ * Fix for Elementor v2 editor components missing dependencies notice in WP 6.9.1+
+ */
+add_action( 'elementor/editor/before_enqueue_scripts', function() {
+	$missing_deps = array(
+		'elementor-v2-editor-canvas',
+		'elementor-v2-editor-controls',
+		'elementor-v2-editor-editing-panel',
+		'elementor-v2-editor-elements',
+		'elementor-v2-editor-props',
+		'elementor-v2-editor-styles-repository',
+		'elementor-v2-editor-templates',
+	);
+	foreach ( $missing_deps as $dep ) {
+		if ( ! wp_script_is( $dep, 'registered' ) ) {
+			wp_register_script( $dep, false, array(), false, true );
+		}
+	}
+}, 0 );
+
+/**
+ * Update cart badges via WooCommerce AJAX fragments
+ */
+add_filter( 'woocommerce_add_to_cart_fragments', 'censkills_cart_badge_fragments' );
+function censkills_cart_badge_fragments( $fragments ) {
+	$cart_count = WC()->cart->get_cart_contents_count();
+	
+	// Desktop header cart count
+	$fragments['span.cart-count'] = '<span class="cart-count">' . esc_html( $cart_count ) . '</span>';
+	
+	// Mobile drawer cart badge
+	if ( $cart_count > 0 ) {
+		$fragments['span.drawer-cart-badge'] = '<span class="drawer-cart-badge">' . esc_html( $cart_count ) . '</span>';
+	} else {
+		$fragments['span.drawer-cart-badge'] = ''; // Or empty if you want it to disappear
+	}
+	
+	return $fragments;
+}
