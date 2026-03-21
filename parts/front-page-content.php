@@ -157,43 +157,7 @@
 					while ( $loop->have_posts() ) : $loop->the_post();
 						global $product;
 						$image_url = get_the_post_thumbnail_url( get_the_ID(), 'full' ) ?: wc_placeholder_img_src();
-				?>
-				<div class="censkills-product">
-					<div class="censkills-product-image-wrap">
-						<a href="<?php echo esc_url( get_permalink() ); ?>" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
-							<?php if ( $product->is_on_sale() ) : ?>
-								<span class="censkills-badge sale-badge">SALE</span>
-							<?php else: ?>
-								<span class="censkills-badge new-badge">NEW</span>
-							<?php endif; ?>
-							<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" class="censkills-product-img">
-						</a>
-						<?php if ( $product->is_type( 'variable' ) ) : ?>
-							<a href="<?php echo esc_url( get_permalink() ); ?>" class="censkills-atc-overlay button"><?php esc_html_e( 'Chọn sản phẩm', 'censkills-theme' ); ?></a>
-						<?php else : ?>
-							<a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>"
-								class="censkills-atc-overlay button ajax_add_to_cart add_to_cart_button"
-								data-product_id="<?php echo esc_attr( $product->get_id() ); ?>"
-								data-product_sku="<?php echo esc_attr( $product->get_sku() ); ?>"
-								data-quantity="1"
-								aria-label="<?php echo esc_attr( sprintf( __( 'Add "%s" to your cart', 'woocommerce' ), $product->get_name() ) ); ?>"
-								rel="nofollow">
-								Thêm vào giỏ
-							</a>
-						<?php endif; ?>
-					</div>
-					<div class="censkills-product-swatches">
-						<!-- Note: These are currently hardcoded UI swatches -->
-						<span class="swatch bg-black"></span>
-						<span class="swatch bg-gray-light"></span>
-						<span class="swatch bg-gray-dark"></span>
-					</div>
-					<h2 class="censkills-product-title"><a href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( get_the_title() ); ?></a></h2>
-					<div class="censkills-product-price">
-						<?php echo wp_kses_post( $product->get_price_html() ); ?>
-					</div>
-				</div>
-				<?php 
+						get_template_part( 'parts/product-card' ); 
 					endwhile; 
 					wp_reset_postdata();
 				else : 
@@ -235,8 +199,72 @@
 			</div>
 
 			<div class="mt-lg">
-				<a href="#" class="btn btn-outline" style="width: 200px; padding: 12px;">Xem Thêm</a>
+				<button id="censkills-load-more" class="btn btn-outline" data-page="1" style="width: 200px; padding: 12px;">Xem Thêm</button>
 			</div>
 		</section>
 
 	</div><!-- .container -->
+
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const loadMoreBtn = document.getElementById('censkills-load-more');
+		const productGrid = document.querySelector('.product-grid');
+		
+		if (loadMoreBtn && productGrid) {
+			loadMoreBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				
+				// Keep track of the page
+				let currentPage = parseInt(loadMoreBtn.getAttribute('data-page'));
+				let nextPage = currentPage + 1;
+				
+				// Set loading state
+				const originalText = loadMoreBtn.innerText;
+				loadMoreBtn.innerText = 'Đang tải...';
+				loadMoreBtn.disabled = true;
+
+				// Prepare AJAX data
+				const data = new URLSearchParams();
+				data.append('action', 'censkills_load_more_products');
+				data.append('page', nextPage);
+
+				// Send the request
+				fetch(typeof censkills_ajax !== 'undefined' ? censkills_ajax.ajaxurl : '/wp-admin/admin-ajax.php', {
+					method: 'POST',
+					body: data
+				})
+				.then(res => res.json())
+				.then(response => {
+					if (response.success && response.data.html) {
+						// Append new products
+						productGrid.insertAdjacentHTML('beforeend', response.data.html);
+						
+						// Re-trigger WooCommerce inject script if present (since elements are new)
+						if (typeof injectAtcButtons === 'function') {
+							injectAtcButtons();
+						}
+						
+						// Update page attribute
+						loadMoreBtn.setAttribute('data-page', nextPage);
+						
+						// Hide button if no more products
+						if (!response.data.has_more) {
+							loadMoreBtn.style.display = 'none';
+						} else {
+							loadMoreBtn.innerText = originalText;
+							loadMoreBtn.disabled = false;
+						}
+					} else {
+						// Either no more or empty response
+						loadMoreBtn.style.display = 'none';
+					}
+				})
+				.catch(err => {
+					console.error(err);
+					loadMoreBtn.innerText = 'Lỗi, thử lại';
+					loadMoreBtn.disabled = false;
+				});
+			});
+		}
+	});
+	</script>

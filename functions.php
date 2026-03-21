@@ -202,3 +202,49 @@ function censkills_cart_badge_fragments( $fragments ) {
 	
 	return $fragments;
 }
+
+/**
+ * AJAX Handler for Front Page "Xem Thêm" (Load More Products)
+ */
+add_action( 'wp_ajax_censkills_load_more_products', 'censkills_ajax_load_more_products' );
+add_action( 'wp_ajax_nopriv_censkills_load_more_products', 'censkills_ajax_load_more_products' );
+function censkills_ajax_load_more_products() {
+	// Sanitize and validate the page number
+	$page = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
+	
+	$args = array(
+		'post_type'      => 'product',
+		'posts_per_page' => 8,
+		'paged'          => $page,
+		'post_status'    => 'publish',
+		'orderby'        => 'date',
+		'order'          => 'DESC'
+	);
+	
+	$loop = new WP_Query( $args );
+	
+	if ( $loop->have_posts() ) {
+		ob_start();
+		
+		while ( $loop->have_posts() ) {
+			$loop->the_post();
+			get_template_part( 'parts/product-card' );
+		}
+		
+		$html = ob_get_clean();
+		
+		// Check if there are more pages
+		$has_more = $loop->max_num_pages > $page;
+		
+		wp_reset_postdata();
+		
+		wp_send_json_success( array(
+			'html'     => $html,
+			'has_more' => $has_more
+		) );
+	} else {
+		wp_send_json_error( array( 'message' => 'No products found' ) );
+	}
+	
+	wp_die();
+}
