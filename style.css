@@ -2956,7 +2956,7 @@ body.woocommerce-checkout .woocommerce {
 /* --- Layout Grid --- */
 .single-product div.product {
 	display: grid;
-	grid-template-columns: 2fr 1fr;
+	grid-template-columns: 3fr 2fr;
 	gap: 0 48px;
 	align-items: start;
 	max-width: var(--container-max-width, 1600px);
@@ -3091,7 +3091,6 @@ body.woocommerce-checkout .woocommerce {
 	border: 1px solid var(--color-border-subtle);
 	border-radius: var(--radius-lg);
 	padding: 32px;
-	position: sticky;
 	top: 100px;
 }
 

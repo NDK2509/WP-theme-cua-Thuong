@@ -20,9 +20,6 @@ require get_template_directory() . '/inc/widgets.php';
 // Include WooCommerce compatibility if plugin is active.
 if ( class_exists( 'WooCommerce' ) ) {
 	require get_template_directory() . '/inc/woocommerce.php';
-	
-	// Remove related products section from single product page
-	remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
 }
 
 // Include Elementor custom widgets if Elementor is active.
