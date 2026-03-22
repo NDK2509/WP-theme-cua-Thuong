@@ -3174,12 +3174,6 @@ body.woocommerce-checkout .woocommerce {
 	color: var(--color-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-	.summary.entry-summary h1.product_title {
-		color: #fff;
-	}
-}
-
 body.dark-mode .summary.entry-summary h1.product_title,
 body.dark-theme .summary.entry-summary h1.product_title,
 [data-theme="dark"] .summary.entry-summary h1.product_title {
