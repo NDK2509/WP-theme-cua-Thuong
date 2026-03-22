@@ -129,6 +129,7 @@ function censkills_woocommerce_loop_thumbnail() {
 			class="censkills-atc-overlay button ajax_add_to_cart add_to_cart_button"
 			data-product_id="' . esc_attr( $product->get_id() ) . '"
 			data-product_sku="' . esc_attr( $product->get_sku() ) . '"
+			data-product_title="' . esc_attr( $product->get_name() ) . '"
 			data-quantity="1"
 			aria-label="' . esc_attr( sprintf( __( 'Add "%s" to your cart', 'woocommerce' ), $product->get_name() ) ) . '"
 			rel="nofollow">
@@ -289,10 +290,160 @@ function censkills_variation_swatches() {
             qtyWrap.prepend(minus);
             qtyWrap.appendChild(plus);
         });
+
     });
     </script>
     <style>
     .variations select { display: none !important; }
+    </style>
+    <?php
+}
+
+add_action('wp_footer', 'censkills_add_to_cart_toast_assets', 99);
+function censkills_add_to_cart_toast_assets() {
+    ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ── Toast Notification (PHP Trigger) ─────────────────────────────────
+        let toastNode = document.querySelector('.censkills-added-toast');
+        if (toastNode) {
+            let parentNotice = toastNode.closest('.woocommerce-message');
+            if (parentNotice) {
+                parentNotice.style.display = 'none';
+            }
+            showCustomToast(toastNode.dataset.name);
+        }
+
+        // ── Toast Notification (AJAX Trigger) ─────────────────────────────────
+        if (typeof jQuery !== 'undefined') {
+            // Handle standard archive AJAX add to cart
+            jQuery(document).on('added_to_cart', function(event, fragments, cart_hash, $button) {
+                let name = 'Sản phẩm';
+                if ($button && $button.data('product_title')) {
+                    name = $button.data('product_title');
+                } else {
+                    let titleEl = document.querySelector('.product_title');
+                    if(titleEl) name = titleEl.innerText;
+                }
+                showCustomToast(name);
+            });
+
+            // Handle Single Product Page Add to Cart via AJAX to prevent page reload
+            jQuery(document).on('submit', 'form.cart', function(e) {
+                e.preventDefault();
+                var $form = jQuery(this);
+                var $btn = $form.find('button[type="submit"]');
+                var formData = new FormData($form[0]);
+                
+                // Append the submit button's value so WooCommerce knows which action to take
+                let btnName = $btn.attr('name') || 'add-to-cart';
+                let btnVal = $btn.val() || $form.find('input[name="add-to-cart"]').val();
+                if(btnVal) {
+                    formData.append(btnName, btnVal);
+                }
+
+                $btn.css('opacity', '0.5');
+
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(res => res.text())
+                .then(html => {
+                    $btn.css('opacity', '1');
+                    
+                    // Show the toast
+                    let titleEl = document.querySelector('.product_title');
+                    let name = titleEl ? titleEl.innerText : 'Sản phẩm';
+                    showCustomToast(name);
+
+                    // Trigger WooCommerce to refresh cart fragments
+                    jQuery(document.body).trigger('wc_fragment_refresh');
+                })
+                .catch(error => {
+                    $btn.css('opacity', '1');
+                    console.error('Add to cart error:', error);
+                });
+            });
+        }
+    });
+
+    function showCustomToast(name) {
+        // Remove existing toast if any
+        let existing = document.querySelector('.censkills-toast-popup');
+        if (existing) existing.remove();
+
+        let toast = document.createElement('div');
+        toast.className = 'censkills-toast-popup';
+        toast.innerHTML = '<div class="censkills-toast-content">Bạn đã thêm <strong>' + name + '</strong> vào giỏ hàng</div><button class="censkills-toast-close">&times;</button>';
+        
+        document.body.appendChild(toast);
+        
+        // Close event
+        toast.querySelector('.censkills-toast-close').addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        });
+
+        // Auto hide
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            if(document.body.contains(toast)) {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if(document.body.contains(toast)) toast.remove();
+                }, 300);
+            }
+        }, 2000);
+    }
+    </script>
+    <style>
+    /* Toast CSS */
+    .censkills-toast-popup {
+        position: fixed;
+        top: 96px;
+        right: 24px;
+        background: var(--color-bg-white, #fff);
+        color: var(--color-text, #111);
+        padding: 16px 20px;
+        border-radius: var(--radius-md, 8px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        border-left: 4px solid var(--color-primary, #2f5acf);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transform: translateY(-20px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 400px;
+    }
+    .censkills-toast-popup.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .censkills-toast-content {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    .censkills-toast-close {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: var(--color-text-light, #555);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+    .censkills-toast-close:hover {
+        color: var(--color-text, #111);
+    }
     </style>
     <?php
 }
@@ -385,6 +536,25 @@ function censkills_product_filter_shortcode( $atts ) {
 	</div>
 	<?php
 	return ob_get_clean();
+}
+
+/**
+ * Custom Add to Cart Message for Toast
+ */
+add_filter( 'wc_add_to_cart_message_html', 'censkills_custom_add_to_cart_toast', 10, 2 );
+function censkills_custom_add_to_cart_toast( $message, $products ) {
+    $titles = array();
+    // $products is sometimes an array of product IDs or product_id => qty
+    if ( is_array( $products ) ) {
+        foreach ( $products as $product_id => $qty ) {
+            $titles[] = get_the_title( $product_id );
+        }
+    } else {
+        $titles[] = get_the_title( $products );
+    }
+    $product_name = implode( ', ', $titles );
+    // Return an invisible trigger div that the JS picks up.
+    return '<span class="censkills-added-toast hidden" data-name="' . esc_attr( $product_name ) . '"></span>';
 }
 
 /**
