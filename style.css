@@ -1524,28 +1524,36 @@ body.home main.site-main {
 	/* Adjust padding to fit border */
 }
 
-/* Swatches (Premium Dark) */
+/* Swatches Container & Items */
+.custom-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-top: 8px;
+}
 .custom-swatches .swatch-btn {
-	background: rgba(255, 255, 255, 0.05);
-	border: 1px solid var(--color-border-subtle);
-	color: var(--color-text-muted);
-	padding: 10px 20px;
+	padding: 8px 16px;
 	border-radius: var(--radius-sm);
 	font-weight: 500;
+	cursor: pointer;
+	user-select: none;
 	transition: var(--transition-fast);
+	border: 1px solid var(--color-border);
+	background: var(--color-bg-white);
+	color: var(--color-text);
 }
 
 .custom-swatches .swatch-btn:hover {
-	background: rgba(255, 255, 255, 0.1);
-	border-color: rgba(255, 255, 255, 0.3);
-	color: var(--color-text-main);
+	border-color: var(--color-text-light);
+	background: var(--color-bg-light-gray);
 }
 
 .custom-swatches .swatch-btn.selected {
-	background: var(--color-accent);
-	border-color: var(--color-accent);
-	color: #fff;
-	box-shadow: 0 0 15px rgba(0, 122, 255, 0.4);
+	background: var(--color-text);
+	border-color: var(--color-text);
+	color: var(--color-bg-white);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	outline: none;
 }
 
 .reset_variations {
@@ -3374,20 +3382,7 @@ body.dark-theme .summary.entry-summary h1.product_title,
 	opacity: 0.7;
 }
 
-/* Swatches (Refined Glow) */
-.custom-swatches .swatch-btn {
-	background: var(--color-bg-card);
-	border: 1px solid var(--color-border-subtle);
-	color: var(--color-text-muted);
-}
 
-.custom-swatches .swatch-btn.selected {
-	background: #000;
-	border-color: var(--color-accent);
-	color: var(--color-text-main);
-	box-shadow: 0 0 10px var(--color-accent-glow);
-	outline: 1px solid var(--color-accent);
-}
 
 .woocommerce span.onsale {
 	display: none;
@@ -3510,7 +3505,6 @@ body.dark-theme .summary.entry-summary h1.product_title,
 .woocommerce-Tabs-panel p,
 .woocommerce-Tabs-panel {
 	line-height: 1.8;
-	color: var(--color-text-muted);
 	font-size: 15px;
 }
 
