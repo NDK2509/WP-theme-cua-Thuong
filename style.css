@@ -3312,6 +3312,7 @@ body.dark-theme .summary.entry-summary h1.product_title,
 	transition: var(--transition-smooth);
 	letter-spacing: 0.05em;
 	width: 100%;
+	margin: 8px 0 8px 0;
 }
 
 .summary.entry-summary button.single_add_to_cart_button:hover {
