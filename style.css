@@ -2977,6 +2977,15 @@ body.woocommerce-checkout .woocommerce {
 	grid-column: 1 / 2;
 }
 
+/* Base Full-width Items */
+.single-product div.product > .woocommerce-tabs,
+.single-product div.product > .related.products,
+.single-product div.product > .upsells.products {
+	grid-column: 1 / -1;
+	width: 100%;
+	margin-top: 48px;
+}
+
 .censkills-product-gallery {
 	display: flex;
 	gap: 24px;
