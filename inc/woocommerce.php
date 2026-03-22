@@ -139,13 +139,6 @@ function censkills_woocommerce_loop_thumbnail() {
 
 
 	echo '</div>'; // close wrap
-
-	// Mockup Color Swatches
-	echo '<div class="censkills-product-swatches">';
-	echo '<span class="swatch bg-black"></span>';
-	echo '<span class="swatch bg-gray-light"></span>';
-	echo '<span class="swatch bg-gray-dark"></span>';
-	echo '</div>';
 }
 
 function censkills_woocommerce_loop_setup() {

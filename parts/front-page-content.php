@@ -178,11 +178,6 @@
 							<a href="#" class="button add_to_cart_button">Add to Cart</a>
 						</div>
 					</div>
-					<div class="censkills-product-swatches">
-						<span class="swatch bg-black"></span>
-						<span class="swatch bg-gray-light"></span>
-						<span class="swatch bg-gray-dark"></span>
-					</div>
 					<h2 class="censkills-product-title"><a href="#">Bó chân Essentials Coolmate - Product <?php echo $i; ?></a></h2>
 					<div class="censkills-product-price">
 						<?php if ($i % 3 === 0) : ?>

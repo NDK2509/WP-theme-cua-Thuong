@@ -34,12 +34,6 @@ $image_url = get_the_post_thumbnail_url( get_the_ID(), 'full' ) ?: wc_placeholde
 			</a>
 		<?php endif; ?>
 	</div>
-	<div class="censkills-product-swatches">
-		<!-- Note: These are currently hardcoded UI swatches -->
-		<span class="swatch bg-black"></span>
-		<span class="swatch bg-gray-light"></span>
-		<span class="swatch bg-gray-dark"></span>
-	</div>
 	<h2 class="censkills-product-title"><a href="<?php echo esc_url( get_permalink() ); ?>"><?php echo esc_html( get_the_title() ); ?></a></h2>
 	<div class="censkills-product-price">
 		<?php echo wp_kses_post( $product->get_price_html() ); ?>

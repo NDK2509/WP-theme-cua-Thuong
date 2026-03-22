@@ -1219,6 +1219,7 @@ li.product:hover .censkills-atc-overlay,
 	margin: 0 0 6px 0;
 	font-weight: 400;
 	line-height: 1.4;
+	height: 2.8em;
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	line-clamp: 2;
