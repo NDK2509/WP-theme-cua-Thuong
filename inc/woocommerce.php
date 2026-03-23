@@ -209,13 +209,6 @@ function censkills_premium_discount_badge() {
     }
 }
 
-// Add Quick Actions (Buy Now) next to Add to Cart
-add_action('woocommerce_after_add_to_cart_button', 'censkills_premium_extra_ctas');
-function censkills_premium_extra_ctas() {
-    echo '<button type="button" class="button buy-now-button">Buy Now</button>';
-}
-
-
 add_action('wp_footer', 'censkills_variation_swatches', 99);
 
 function censkills_variation_swatches() {
@@ -325,7 +318,8 @@ function censkills_add_to_cart_toast_assets() {
             jQuery(document).on('submit', 'form.cart', function(e) {
                 e.preventDefault();
                 var $form = jQuery(this);
-                var $btn = $form.find('button[type="submit"]');
+                // Use the main add to cart button to find the value
+                var $btn = $form.find('.single_add_to_cart_button');
                 var formData = new FormData($form[0]);
                 
                 // Append the submit button's value so WooCommerce knows which action to take

@@ -3333,28 +3333,6 @@ body.dark-theme .summary.entry-summary h1.product_title,
 	background: var(--color-accent);
 }
 
-/* Buy Now Button */
-.buy-now-button {
-	height: 52px;
-	background: #ebebeb !important;
-	color: #1a1a1a !important;
-	border: 1px solid var(--color-border-subtle);
-	border-radius: 50px !important;
-	font-size: 14px;
-	font-weight: 700;
-	text-transform: uppercase;
-	width: 100%;
-	transition: var(--transition-smooth);
-}
-
-
-.buy-now-button:hover {
-	transform: translateY(-1px);
-	filter: brightness(1.1);
-	box-shadow: 0 6px 20px var(--color-accent-glow);
-	color: #fff;
-}
-
 
 /* Trust Row (Horizontal) */
 .premium-trust-row {
@@ -3435,7 +3413,6 @@ body.dark-theme .summary.entry-summary h1.product_title,
 		/* Hide non-essentials in sticky bar */
 	}
 
-	.single-product .summary.entry-summary form.cart .buy-now-button,
 	.single-product .summary.entry-summary form.cart button.single_add_to_cart_button {
 		width: 100%;
 		margin: 0;
