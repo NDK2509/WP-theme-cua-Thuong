@@ -326,6 +326,7 @@ button {
 	font-weight: 700;
 	margin-bottom: var(--spacing-lg);
 	text-transform: uppercase;
+	font-family: "Inter", sans-serif;
 }
 
 /* ==========================================================================
