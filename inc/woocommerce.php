@@ -156,6 +156,44 @@ function censkills_woocommerce_loop_price() {
 }
 
 /**
+ * Detect product type for size suggestions (shirt, shoes, bottom)
+ */
+function censkills_get_product_type( $product_id ) {
+	$tags = get_the_terms( $product_id, 'product_tag' );
+	$cats = get_the_terms( $product_id, 'product_cat' );
+	$all_slugs = array();
+
+	if ( ! empty( $tags ) && ! is_wp_error( $tags ) ) {
+		foreach ( $tags as $tag ) $all_slugs[] = $tag->slug;
+	}
+	if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) {
+		foreach ( $cats as $cat ) $all_slugs[] = $cat->slug;
+	}
+
+	foreach ( $all_slugs as $slug ) {
+		if ( in_array( $slug, array( 'shirt', 'ao', 't-shirt', 'polo' ) ) ) return 'shirt';
+		if ( in_array( $slug, array( 'shoes', 'giay', 'sneakers', 'giay-the-thao' ) ) ) return 'shoes';
+		if ( in_array( $slug, array( 'quan', 'pants', 'trousers', 'shorts' ) ) ) return 'bottom';
+		if ( in_array( $slug, array( 'bra', 'quan-lot', 'undergarment', 'ao-lot' ) ) ) return 'bra';
+	}
+	return 'default';
+}
+
+// Add Size Guide Button
+add_action('woocommerce_single_product_summary', 'censkills_add_size_guide_button', 25);
+function censkills_add_size_guide_button() {
+	global $product;
+	if ( ! $product->is_type( 'variable' ) ) return; 
+	
+	echo '<div class="size-guide-trigger-wrap">';
+	echo '<button type="button" class="btn-size-guide" id="open-size-modal">';
+	echo '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M7 7l10 10M17 7L7 10"/></svg>';
+	echo 'Gợi ý chọn size';
+	echo '</button>';
+	echo '</div>';
+}
+
+/**
  * Custom Single Product Additions (Coolmate UI)
  */
 /**
@@ -644,4 +682,209 @@ function censkills_filter_products_ajax() {
 
 	wp_send_json_success( array( 'html' => $html ) );
 	wp_die();
+}
+
+add_action('wp_footer', 'censkills_size_suggestion_modal_assets', 100);
+function censkills_size_suggestion_modal_assets() {
+    if ( ! function_exists('is_product') || ! is_product() ) return;
+    $product_id = get_the_ID();
+    $type = censkills_get_product_type($product_id);
+    ?>
+    <div id="censkills-size-modal" class="censkills-modal">
+        <div class="censkills-modal-overlay"></div>
+        <div class="censkills-modal-content">
+            <button class="censkills-modal-close" aria-label="Close">&times;</button>
+            
+            <div class="size-modal-inner">
+                <h3 class="modal-title">Gợi ý kích thước cho bạn</h3>
+                <p class="modal-subtitle">Nhập thông tin để chúng tôi tìm size phù hợp nhất</p>
+
+                <?php if ( $type === 'shoes' ) : ?>
+                    <!-- Shoes Guide -->
+                    <div class="size-calculator shoes-calc">
+						<div class="input-row">
+							<div class="input-group">
+								<label>Chiều dài bàn chân (cm)</label>
+								<input type="number" id="foot-length" placeholder="Ví dụ: 25.5">
+							</div>
+						</div>
+                        <button class="suggest-btn" id="calc-size-shoes">Xem gợi ý</button>
+                        <div id="size-result" class="size-result-box"></div>
+                    </div>
+                <?php elseif ( $type === 'bra' ) : ?>
+                    <!-- Bra Calculator -->
+                    <div class="size-calculator bra-calc">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Vòng chân ngực (cm)</label>
+                                <input type="number" id="underbust" placeholder="75">
+                            </div>
+                            <div class="input-group">
+                                <label>Vòng đỉnh ngực (cm)</label>
+                                <input type="number" id="overbust" placeholder="88">
+                            </div>
+                        </div>
+                        <button class="suggest-btn" id="calc-size-bra">Xem gợi ý</button>
+                        <div id="size-result" class="size-result-box"></div>
+                    </div>
+                <?php else : ?>
+                    <!-- Shirt/Pants Calculator -->
+                    <div class="size-calculator apparel-calc">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Chiều cao (cm)</label>
+                                <input type="number" id="user-height" placeholder="170">
+                            </div>
+                            <div class="input-group">
+                                <label>Cân nặng (kg)</label>
+                                <input type="number" id="user-weight" placeholder="65">
+                            </div>
+                        </div>
+                        <button class="suggest-btn" id="calc-size-apparel">Xem gợi ý</button>
+                        <div id="size-result" class="size-result-box"></div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="size-chart-section">
+                    <h4 class="section-label">Bảng size tham khảo</h4>
+                    <div class="chart-scroll">
+                    <?php if ( $type === 'shoes' ) : ?>
+                        <table class="size-table">
+                            <thead><tr><th>Size (EU)</th><th>38</th><th>39</th><th>40</th><th>41</th><th>42</th><th>43</th></tr></thead>
+                            <tbody><tr><td>Chiều dài (cm)</td><td>23.5</td><td>24.5</td><td>25.0</td><td>26.0</td><td>26.5</td><td>27.5</td></tr></tbody>
+                        </table>
+                    <?php elseif ( $type === 'bra' ) : ?>
+                        <table class="size-table">
+                            <thead><tr><th>Band</th><th>70</th><th>75</th><th>80</th><th>85</th><th>90</th></tr></thead>
+                            <tbody><tr><td>Chân ngực</td><td>68-72</td><td>73-77</td><td>78-82</td><td>83-87</td><td>88-92</td></tr></tbody>
+                        </table>
+                        <table class="size-table" style="margin-top: 10px;">
+                            <thead><tr><th>Cup</th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+                            <tbody><tr><td>Chênh lệch</td><td>10-12</td><td>12-14</td><td>15-17</td><td>18-20</td></tr></tbody>
+                        </table>
+                    <?php else: ?>
+                        <table class="size-table">
+                            <thead><tr><th>Size</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr></thead>
+                            <tbody>
+                                <tr><td>Chiều cao</td><td>155-165</td><td>160-170</td><td>165-175</td><td>170-180</td><td>175-185</td></tr>
+                                <tr><td>Cân nặng</td><td>45-55kg</td><td>55-65kg</td><td>65-75kg</td><td>75-85kg</td><td>85-95kg</td></tr>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('censkills-size-modal');
+        const openBtn = document.getElementById('open-size-modal');
+        const closeBtn = modal.querySelector('.censkills-modal-close');
+        const overlay = modal.querySelector('.censkills-modal-overlay');
+
+        if(openBtn) {
+            openBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+        
+        const closeModal = () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        if(closeBtn) closeBtn.addEventListener('click', closeModal);
+        if(overlay) overlay.addEventListener('click', closeModal);
+
+        // Apparel Calculation logic
+        const apparelBtn = document.getElementById('calc-size-apparel');
+        if(apparelBtn) {
+            apparelBtn.addEventListener('click', function() {
+                const h = parseInt(document.getElementById('user-height').value);
+                const w = parseInt(document.getElementById('user-weight').value);
+                const result = document.getElementById('size-result');
+                
+                if(!h || !w) {
+                    result.innerHTML = '<span class="error">Vui lòng nhập đầy đủ thông tin</span>';
+                    result.classList.add('show');
+                    return;
+                }
+
+                let size = "L"; 
+                if(w < 55) size = "S";
+                else if(w < 65) size = "M";
+                else if(w < 75) size = "L";
+                else if(w < 85) size = "XL";
+                else size = "XXL";
+
+                result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
+                result.classList.add('show');
+            });
+        }
+
+        // Shoes Calculation logic
+        const shoesBtn = document.getElementById('calc-size-shoes');
+        if(shoesBtn) {
+            shoesBtn.addEventListener('click', function() {
+                const len = parseFloat(document.getElementById('foot-length').value);
+                const result = document.getElementById('size-result');
+                
+                if(!len) {
+                    result.innerHTML = '<span class="error">Vui lòng nhập chiều dài bàn chân</span>';
+                    result.classList.add('show');
+                    return;
+                }
+
+                let size = "40";
+                if(len < 24) size = "38";
+                else if(len < 25) size = "39";
+                else if(len < 25.5) size = "40";
+                else if(len < 26.5) size = "41";
+                else if(len < 27) size = "42";
+                else size = "43";
+
+                result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
+                result.classList.add('show');
+            });
+        }
+
+        // Bra Calculation logic
+        const braBtn = document.getElementById('calc-size-bra');
+        if(braBtn) {
+            braBtn.addEventListener('click', function() {
+                const u = parseFloat(document.getElementById('underbust').value);
+                const o = parseFloat(document.getElementById('overbust').value);
+                const result = document.getElementById('size-result');
+                
+                if(!u || !o) {
+                    result.innerHTML = '<span class="error">Vui lòng nhập đầy đủ thông tin</span>';
+                    result.classList.add('show');
+                    return;
+                }
+
+                const diff = o - u;
+                let band = "75";
+                if(u <= 72) band = "70";
+                else if(u <= 77) band = "75";
+                else if(u <= 82) band = "80";
+                else if(u <= 87) band = "85";
+                else band = "90";
+
+                let cup = "A";
+                if(diff < 12) cup = "A";
+                else if(diff < 15) cup = "B";
+                else if(diff < 17) cup = "C";
+                else cup = "D";
+
+                result.innerHTML = 'Size phù hợp với bạn là: <strong>' + band + cup + '</strong>';
+                result.classList.add('show');
+            });
+        }
+    });
+    </script>
+    <?php
 }
