@@ -1525,12 +1525,23 @@ body.home main.site-main {
 	/* Adjust padding to fit border */
 }
 
-/* Swatches Container & Items */
-.custom-swatches {
+.variations th.label {
+	vertical-align: baseline !important;
+}
+.variations td.value {
 	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 16px;
+	align-items: center;
+	vertical-align: middle;
+}
+
+.custom-swatches {
+	display: inline-flex;
 	flex-wrap: wrap;
 	gap: 12px;
-	margin-top: 8px;
+	margin-left: 16px;
 }
 .custom-swatches .swatch-btn {
 	padding: 8px 16px;
@@ -1558,15 +1569,18 @@ body.home main.site-main {
 }
 
 .reset_variations {
-	color: var(--color-text-muted);
-	font-size: 11px;
-	opacity: 0.6;
+	color: var(--color-primary, #2f5acf) !important;
+	font-size: 13px;
+	text-decoration: none;
+	opacity: 0.8;
 	transition: var(--transition-fast);
+	display: inline-block;
+	white-space: nowrap;
 }
 
 .reset_variations:hover {
 	opacity: 1;
-	color: var(--color-accent);
+	text-decoration: underline;
 }
 
 /* Related Products (Dark) */

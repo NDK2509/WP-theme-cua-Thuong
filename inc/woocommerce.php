@@ -278,6 +278,12 @@ function censkills_variation_swatches() {
             });
 
             select.parentNode.appendChild(wrapper);
+
+            // Move 'Clear' button to the end
+            const resetBtn = select.parentNode.querySelector('.reset_variations');
+            if (resetBtn) {
+                select.parentNode.appendChild(resetBtn);
+            }
         });
 
         if(typeof jQuery !== 'undefined') {
