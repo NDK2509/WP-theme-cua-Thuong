@@ -156,6 +156,28 @@ function censkills_woocommerce_loop_price() {
 }
 
 /**
+ * Detect product gender for size suggestions (men, women)
+ */
+function censkills_get_product_gender( $product_id ) {
+	$tags = get_the_terms( $product_id, 'product_tag' );
+	$cats = get_the_terms( $product_id, 'product_cat' );
+	$all_slugs = array();
+
+	if ( ! empty( $tags ) && ! is_wp_error( $tags ) ) {
+		foreach ( $tags as $tag ) $all_slugs[] = $tag->slug;
+	}
+	if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) {
+		foreach ( $cats as $cat ) $all_slugs[] = $cat->slug;
+	}
+
+	foreach ( $all_slugs as $slug ) {
+		if ( in_array( $slug, array( 'women', 'nu', 'female' ) ) ) return 'women';
+		if ( in_array( $slug, array( 'men', 'nam', 'male' ) ) ) return 'men';
+	}
+	return 'men'; // default to men
+}
+
+/**
  * Detect product type for size suggestions (shirt, shoes, bottom)
  */
 function censkills_get_product_type( $product_id ) {
@@ -695,6 +717,7 @@ function censkills_size_suggestion_modal_assets() {
     if ( ! function_exists('is_product') || ! is_product() ) return;
     $product_id = get_the_ID();
     $type = censkills_get_product_type($product_id);
+    $gender = censkills_get_product_gender($product_id);
     ?>
     <div id="censkills-size-modal" class="censkills-modal">
         <div class="censkills-modal-overlay"></div>
@@ -735,7 +758,7 @@ function censkills_size_suggestion_modal_assets() {
                     </div>
                 <?php else : ?>
                     <!-- Shirt/Pants Calculator -->
-                    <div class="size-calculator apparel-calc">
+                    <div class="size-calculator apparel-calc" data-gender="<?php echo esc_attr($gender); ?>">
                         <div class="input-row">
                             <div class="input-group">
                                 <label>Chiều cao (cm)</label>
@@ -769,13 +792,23 @@ function censkills_size_suggestion_modal_assets() {
                             <tbody><tr><td>Chênh lệch</td><td>10-12</td><td>12-14</td><td>15-17</td><td>18-20</td></tr></tbody>
                         </table>
                     <?php else: ?>
-                        <table class="size-table">
-                            <thead><tr><th>Size</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr></thead>
-                            <tbody>
-                                <tr><td>Chiều cao</td><td>155-165</td><td>160-170</td><td>165-175</td><td>170-180</td><td>175-185</td></tr>
-                                <tr><td>Cân nặng</td><td>45-55kg</td><td>55-65kg</td><td>65-75kg</td><td>75-85kg</td><td>85-95kg</td></tr>
-                            </tbody>
-                        </table>
+                        <?php if ( $gender === 'women' ) : ?>
+                            <table class="size-table">
+                                <thead><tr><th>Size (Nữ)</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Chiều cao</td><td>150-155</td><td>155-160</td><td>160-165</td><td>165-170</td><td>170-175</td></tr>
+                                    <tr><td>Cân nặng</td><td>40-47kg</td><td>47-53kg</td><td>53-59kg</td><td>59-65kg</td><td>65-72kg</td></tr>
+                                </tbody>
+                            </table>
+                        <?php else : ?>
+                            <table class="size-table">
+                                <thead><tr><th>Size (Nam)</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Chiều cao</td><td>160-165</td><td>165-170</td><td>170-175</td><td>175-180</td><td>180-185</td></tr>
+                                    <tr><td>Cân nặng</td><td>55-60kg</td><td>60-68kg</td><td>68-76kg</td><td>76-85kg</td><td>85-95kg</td></tr>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
                     <?php endif; ?>
                     </div>
                 </div>
@@ -813,6 +846,8 @@ function censkills_size_suggestion_modal_assets() {
                 const h = parseInt(document.getElementById('user-height').value);
                 const w = parseInt(document.getElementById('user-weight').value);
                 const result = document.getElementById('size-result');
+                const calcDiv = document.querySelector('.apparel-calc');
+                const gender = calcDiv ? calcDiv.dataset.gender : 'men';
                 
                 if(!h || !w) {
                     result.innerHTML = '<span class="error">Vui lòng nhập đầy đủ thông tin</span>';
@@ -820,12 +855,20 @@ function censkills_size_suggestion_modal_assets() {
                     return;
                 }
 
-                let size = "L"; 
-                if(w < 55) size = "S";
-                else if(w < 65) size = "M";
-                else if(w < 75) size = "L";
-                else if(w < 85) size = "XL";
-                else size = "XXL";
+                let size = "L";
+                if(gender === 'women') {
+                    if(w <= 47) size = "S";
+                    else if(w <= 53) size = "M";
+                    else if(w <= 59) size = "L";
+                    else if(w <= 65) size = "XL";
+                    else size = "XXL";
+                } else {
+                    if(w <= 60) size = "S";
+                    else if(w <= 68) size = "M";
+                    else if(w <= 76) size = "L";
+                    else if(w <= 85) size = "XL";
+                    else size = "XXL";
+                }
 
                 result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
                 result.classList.add('show');
