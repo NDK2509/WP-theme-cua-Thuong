@@ -80,6 +80,41 @@ Text Domain: censkills-theme
 	--box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 	--box-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 	--transition-normal: 0.3s ease;
+	
+	/* Size Suggestion Modal - Light Theme (Default) */
+	--size-modal-bg: #ffffff;
+	--size-modal-text: #111111;
+	--size-modal-subtitle: #666666;
+	--size-modal-calc-bg: #f9f9f9;
+	--size-modal-label: #555555;
+	--size-modal-input-bg: #ffffff;
+	--size-modal-input-border: #dddddd;
+	--size-modal-input-text: #111111;
+	--size-modal-table-header-bg: #f2f2f2;
+	--size-modal-table-row-bg: #ffffff;
+	--size-modal-table-border: #eeeeee;
+	--size-modal-close: #888888;
+	--size-modal-close-hover: #111111;
+}
+
+/* Size Suggestion Modal - Dark Theme Overrides */
+body.dark-mode,
+body.dark-theme,
+[data-theme="dark"],
+.premium-dark-product {
+	--size-modal-bg: #1a1a1a;
+	--size-modal-text: #ffffff;
+	--size-modal-subtitle: #aaaaaa;
+	--size-modal-calc-bg: #242424;
+	--size-modal-label: #888888;
+	--size-modal-input-bg: #111111;
+	--size-modal-input-border: #333333;
+	--size-modal-input-text: #ffffff;
+	--size-modal-table-header-bg: #333333;
+	--size-modal-table-row-bg: #222222;
+	--size-modal-table-border: #333333;
+	--size-modal-close: #888888;
+	--size-modal-close-hover: #ffffff;
 }
 
 
@@ -3601,13 +3636,13 @@ body.dark-theme .summary.entry-summary h1.product_title,
 
 .censkills-modal-content {
     position: relative;
-    background: #1a1a1a;
+    background: var(--size-modal-bg);
     width: 100%;
     max-width: 500px;
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border-subtle);
     box-shadow: var(--shadow-premium);
-    color: #fff;
+    color: var(--size-modal-text);
     padding: 32px;
     z-index: 1;
     animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -3624,7 +3659,7 @@ body.dark-theme .summary.entry-summary h1.product_title,
     right: 20px;
     font-size: 28px;
     line-height: 1;
-    color: #888;
+    color: var(--size-modal-close);
     background: none;
     border: none;
     cursor: pointer;
@@ -3632,7 +3667,7 @@ body.dark-theme .summary.entry-summary h1.product_title,
 }
 
 .censkills-modal-close:hover {
-    color: #fff;
+    color: var(--size-modal-close-hover);
 }
 
 .modal-title {
@@ -3643,13 +3678,13 @@ body.dark-theme .summary.entry-summary h1.product_title,
 
 .modal-subtitle {
     font-size: 14px;
-    color: #aaa;
+    color: var(--size-modal-subtitle);
     margin-bottom: 24px;
 }
 
 /* Calculator Styles */
 .size-calculator {
-    background: #242424;
+    background: var(--size-modal-calc-bg);
     padding: 24px;
     border-radius: var(--radius-md);
     margin-bottom: 24px;
@@ -3670,17 +3705,17 @@ body.dark-theme .summary.entry-summary h1.product_title,
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #888;
+    color: var(--size-modal-label);
     margin-bottom: 8px;
 }
 
 .input-group input {
     width: 100%;
-    background: #111;
-    border: 1px solid #333;
+    background: var(--size-modal-input-bg);
+    border: 1px solid var(--size-modal-input-border);
     padding: 12px;
     border-radius: var(--radius-sm);
-    color: #fff;
+    color: var(--size-modal-input-text);
     font-size: 16px;
     transition: border-color 0.2s;
 }
@@ -3722,7 +3757,7 @@ body.dark-theme .summary.entry-summary h1.product_title,
 }
 
 .size-result-box strong {
-    color: #fff;
+    color: var(--size-modal-text);
     font-size: 18px;
     margin-left: 5px;
 }
@@ -3737,7 +3772,7 @@ body.dark-theme .summary.entry-summary h1.product_title,
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 12px;
-    color: #ccc;
+    color: var(--size-modal-subtitle);
 }
 
 .chart-scroll {
@@ -3752,15 +3787,15 @@ body.dark-theme .summary.entry-summary h1.product_title,
 }
 
 .size-table th {
-    background: #333;
+    background: var(--size-modal-table-header-bg);
     padding: 10px;
-    border: 1px solid #444;
+    border: 1px solid var(--size-modal-table-border);
 }
 
 .size-table td {
     padding: 10px;
-    border: 1px solid #333;
-    background: #222;
+    border: 1px solid var(--size-modal-table-border);
+    background: var(--size-modal-table-row-bg);
 }
 
 @media (max-width: 480px) {
