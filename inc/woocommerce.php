@@ -855,22 +855,28 @@ function censkills_size_suggestion_modal_assets() {
                     return;
                 }
 
-                let size = "L";
+                let size = null;
                 if(gender === 'women') {
-                    if(w <= 47) size = "S";
+                    if(h < 150 || h > 175 || w < 40 || w > 72) size = null;
+                    else if(w <= 47) size = "S";
                     else if(w <= 53) size = "M";
                     else if(w <= 59) size = "L";
                     else if(w <= 65) size = "XL";
                     else size = "XXL";
                 } else {
-                    if(w <= 60) size = "S";
+                    if(h < 160 || h > 185 || w < 55 || w > 95) size = null;
+                    else if(w <= 60) size = "S";
                     else if(w <= 68) size = "M";
                     else if(w <= 76) size = "L";
                     else if(w <= 85) size = "XL";
                     else size = "XXL";
                 }
 
-                result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
+                if (size) {
+                    result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
+                } else {
+                    result.innerHTML = 'Không có size phù hợp!';
+                }
                 result.classList.add('show');
             });
         }
@@ -888,15 +894,20 @@ function censkills_size_suggestion_modal_assets() {
                     return;
                 }
 
-                let size = "40";
-                if(len < 24) size = "38";
+                let size = null;
+                if(len < 23.5 || len > 27.5) size = null;
+                else if(len < 24) size = "38";
                 else if(len < 25) size = "39";
                 else if(len < 25.5) size = "40";
                 else if(len < 26.5) size = "41";
                 else if(len < 27) size = "42";
                 else size = "43";
 
-                result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
+                if (size) {
+                    result.innerHTML = 'Size phù hợp với bạn là: <strong>' + size + '</strong>';
+                } else {
+                    result.innerHTML = 'Không có size phù hợp!';
+                }
                 result.classList.add('show');
             });
         }
@@ -916,20 +927,26 @@ function censkills_size_suggestion_modal_assets() {
                 }
 
                 const diff = o - u;
-                let band = "75";
-                if(u <= 72) band = "70";
+                let band = null;
+                if(u < 68 || u > 92) band = null;
+                else if(u <= 72) band = "70";
                 else if(u <= 77) band = "75";
                 else if(u <= 82) band = "80";
                 else if(u <= 87) band = "85";
                 else band = "90";
 
-                let cup = "A";
-                if(diff < 12) cup = "A";
+                let cup = null;
+                if(diff < 10 || diff > 20) cup = null;
+                else if(diff < 12) cup = "A";
                 else if(diff < 15) cup = "B";
                 else if(diff < 17) cup = "C";
                 else cup = "D";
 
-                result.innerHTML = 'Size phù hợp với bạn là: <strong>' + band + cup + '</strong>';
+                if (band && cup) {
+                    result.innerHTML = 'Size phù hợp với bạn là: <strong>' + band + cup + '</strong>';
+                } else {
+                    result.innerHTML = 'Không có size phù hợp!';
+                }
                 result.classList.add('show');
             });
         }
