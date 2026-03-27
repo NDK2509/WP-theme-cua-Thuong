@@ -1575,12 +1575,15 @@ body.home main.site-main {
 .custom-swatches {
 	display: inline-flex;
 	flex-wrap: wrap;
-	gap: 12px;
+	gap: 6px;
 	margin-left: 16px;
 }
 .custom-swatches .swatch-btn {
-	padding: 8px 16px;
+	padding: 4px 10px;
+	min-width: 40px;
+	text-align: center;
 	border-radius: var(--radius-sm);
+	font-size: 14px;
 	font-weight: 500;
 	cursor: pointer;
 	user-select: none;
