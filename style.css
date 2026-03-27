@@ -3212,7 +3212,7 @@ body.woocommerce-checkout .woocommerce {
 }
 
 .censkills-product-meta .meta-value {
-	color: var(--color-text-main);
+	color: var(--color-primary);
 	font-weight: 500;
 }
 
